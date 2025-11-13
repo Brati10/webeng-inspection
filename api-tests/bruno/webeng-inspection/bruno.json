@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "webeng-inspection",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
