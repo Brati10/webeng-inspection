@@ -6,10 +6,36 @@ meta {
 
 post {
   url: {{baseUrl}}/api/checklists
-  body: none
+  body: json
   auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Standard-Inspektion Turbine A",
+    "plantName": "Werk Mannheim",
+    "recommendations": "Vor Beginn der Inspektion Sicherheitscheck durchführen.",
+    "steps": [
+      {
+        "description": "Sichtprüfung Gehäuse",
+        "requirement": "Keine sichtbaren Schäden.",
+        "orderIndex": 1
+      },
+      {
+        "description": "Ölstand prüfen",
+        "requirement": "Ölstand im grünen Bereich.",
+        "orderIndex": 2
+      }
+    ]
+  }
+  
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
