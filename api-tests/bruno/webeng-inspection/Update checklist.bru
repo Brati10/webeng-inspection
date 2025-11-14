@@ -1,0 +1,45 @@
+meta {
+  name: Update checklist
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/checklists/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Standard-Inspektion Turbine A (aktualisiert)",
+    "plantName": "Werk Mannheim",
+    "recommendations": "Vor Beginn Sicherheitscheck durchführen. Nach Abschluss Ölstand erneut prüfen.",
+    "steps": [
+      {
+        "description": "Sichtprüfung Gehäuse",
+        "requirement": "Keine sichtbaren Schäden.",
+        "orderIndex": 1
+      },
+      {
+        "description": "Ölstand prüfen",
+        "requirement": "Ölstand im grünen Bereich. Dokumentation im Wartungsbuch.",
+        "orderIndex": 2
+      },
+      {
+        "description": "Temperatur überprüfen",
+        "requirement": "Temperatur im definierten Bereich.",
+        "orderIndex": 3
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
