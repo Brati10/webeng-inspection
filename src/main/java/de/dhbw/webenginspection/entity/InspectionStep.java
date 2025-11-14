@@ -1,8 +1,10 @@
 package de.dhbw.webenginspection.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // kann man noch sauberer über DTOs lösen, evtl. ToDo für später
 @Entity
 public class InspectionStep {
     @Id
