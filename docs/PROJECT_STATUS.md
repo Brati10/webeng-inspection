@@ -54,10 +54,10 @@
 - [x] ChecklistStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
 
 #### 1.5.2 InspectionSteps (konkrete Schritte einer Inspection)
-- [ ] `InspectionStepService` implementiert
-- [ ] `InspectionStepController` implementiert
-- [ ] Endpunkte für InspectionSteps (lesen/anlegen/ändern/löschen, Status/Kommentar setzen) vorhanden
-- [ ] InspectionStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
+- [x] `InspectionStepService` implementiert
+- [x] `InspectionStepController` implementiert
+- [x] Endpunkte für InspectionSteps (lesen/anlegen/ändern/löschen, Status/Kommentar setzen) vorhanden
+- [x] InspectionStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
 
 ### 1.6 Querschnittsthemen Backend
 - [ ] Globales Error-Handling mit `@ControllerAdvice`

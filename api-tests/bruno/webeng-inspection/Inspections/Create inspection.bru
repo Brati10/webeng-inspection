@@ -24,6 +24,12 @@ body:json {
   }
 }
 
+tests {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("inspectionId", res.body.id);
+  }
+}
+
 settings {
   encodeUrl: true
   timeout: 0

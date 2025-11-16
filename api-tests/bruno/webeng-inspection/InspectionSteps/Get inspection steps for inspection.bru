@@ -1,0 +1,15 @@
+meta {
+  name: Get inspection steps for inspection
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/inspections/{{inspectionId}}/steps
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Update inspection step completely
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/inspection-steps/{{inspectionStepId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "status": "PASSED",
+    "comment": "Alles in Ordnung, keine Auffälligkeiten.",
+    "photoPath": "/photos/inspection-1-step-3.jpg"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

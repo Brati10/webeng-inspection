@@ -1,0 +1,34 @@
+meta {
+  name: Create inspection step for inspection and with checklist step
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/inspections/{{inspectionId}}/steps?checklistStepId={{checklistStepId}}
+  body: json
+  auth: inherit
+}
+
+params:query {
+  checklistStepId: {{checklistStepId}}
+}
+
+body:json {
+  {
+    "status": "NOT_APPLICABLE",
+    "comment": "Wird vor Ort geprüft.",
+    "photoPath": null
+  }
+}
+
+tests {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("inspectionStepId", res.body.id);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

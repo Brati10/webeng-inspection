@@ -1,0 +1,16 @@
+meta {
+  name: Get inspections steps for inspection by status
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/inspections/{{inspectionId}}/steps/status/NOT_APPLICABLE
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
