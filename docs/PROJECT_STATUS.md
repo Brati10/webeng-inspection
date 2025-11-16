@@ -6,47 +6,69 @@
 ## 1. Backend – Spring Boot
 
 ### 1.1 Projektgrundlage
-- [x] Spring-Boot-Projekt angelegt (Gradle/Maven)
+- [x] Spring-Boot-Projekt angelegt (Gradle, Java)
 - [x] Anwendung startet ohne Fehler
-- [x] Package-Struktur festgelegt
+- [x] Package-Struktur festgelegt (`controller`, `service`, `repository`, `entity`, `dto`)
 
 ### 1.2 Domänenmodell & Persistenz
 - [x] Entity `Checklist` angelegt
 - [x] Entity `Inspection` angelegt
-- [x] Entity `Step` angelegt
-- [x] Relationen zwischen `Checklist`, `Inspection` und `Step` modelliert
-- [x] JPA-Repositories für alle benötigten Entities angelegt
+- [x] Entity `ChecklistStep` angelegt
+- [x] Entity `InspectionStep` angelegt
+- [x] Enum `StepStatus` angelegt
+- [x] Relationen `Checklist` ↔ `Inspection` modelliert
+- [x] Relationen `Checklist` ↔ `ChecklistStep` modelliert
+- [x] Relationen `Inspection` ↔ `InspectionStep` modelliert
+- [x] Relation `InspectionStep` ↔ `ChecklistStep` modelliert
+- [x] JPA-Repositories für `Checklist`, `Inspection`, `ChecklistStep`, `InspectionStep` angelegt
 
 ### 1.3 Use-Case: Checklist
 - [x] `ChecklistService` implementiert
 - [x] `ChecklistController` implementiert
-- [x] Basis-CRUD-Endpunkte für Checklists vorhanden
-- [x] Checklist-Endpunkte in Bruno anlegst und getestet (Happy Path)
+- [x] Basis-CRUD-Endpunkte für Checklists vorhanden:
+  - `GET /api/checklists`
+  - `GET /api/checklists/{id}`
+  - `POST /api/checklists`
+  - `PUT /api/checklists/{id}`
+  - `DELETE /api/checklists/{id}`
+- [x] Logik zum Aktualisieren der Steps innerhalb einer Checklist im Service implementiert
 
 ### 1.4 Use-Case: Inspection
+- [x] DTO `InspectionCreateRequest` angelegt
 - [x] `InspectionService` implementiert
 - [x] `InspectionController` implementiert
-- [x] Endpunkte für Inspections (lesen/anlegen/ändern/löschen) vorhanden
-- [x] Inspection-Endpunkte in Bruno angelegt und getestet (Happy Path)
+- [x] Endpunkte für Inspections vorhanden:
+  - `GET /api/inspections`
+  - `GET /api/inspections/{id}`
+  - `POST /api/inspections` (Erzeugen inkl. zugehöriger `InspectionStep`s aus `ChecklistStep`s)
+  - `DELETE /api/inspections/{id}`
+  - `PATCH /api/inspections/{id}/status` (Status-Update)
+- [x] Automatisches Anlegen der `InspectionStep`s beim Erzeugen einer Inspection umgesetzt
 
-### 1.5 Use-Case: Step
-- [ ] `StepService` implementiert
-- [ ] `StepController` implementiert
-- [ ] Endpunkte für Steps (lesen/anlegen/ändern/löschen) vorhanden
-- [ ] Step-Endpunkte in Bruno angelegt und getestet (Happy Path)
+### 1.5 Use-Case: Steps
+
+#### 1.5.1 ChecklistSteps (Vorlagen-Schritte)
+- [x] `ChecklistStepService` implementiert
+- [x] `ChecklistStepController` implementiert
+- [x] Endpunkte für ChecklistSteps (lesen/anlegen/ändern/löschen) vorhanden
+- [x] ChecklistStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
+
+#### 1.5.2 InspectionSteps (konkrete Schritte einer Inspection)
+- [ ] `InspectionStepService` implementiert
+- [ ] `InspectionStepController` implementiert
+- [ ] Endpunkte für InspectionSteps (lesen/anlegen/ändern/löschen, Status/Kommentar setzen) vorhanden
+- [ ] InspectionStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
 
 ### 1.6 Querschnittsthemen Backend
 - [ ] Globales Error-Handling mit `@ControllerAdvice`
 - [ ] Einheitliches Fehler-Response-Format (z. B. Error-DTO)
 - [ ] Bean Validation auf Request-Bodies (z. B. `@NotNull`, `@Size`, …)
-- [ ] Sinnvolles Logging eingerichtet
-- [ ] Basis-Tests mit MockMvc für zentrale Endpoints
+- [ ] Sinnvolles Logging eingerichtet (z. B. in Services/Controllern)
+- [ ] Basis-Tests mit MockMvc für zentrale Endpoints (Checklist, Inspection, Steps)
 - [ ] (Optional) Swagger / OpenAPI-Doku
 
 
 ## 2. Frontend – React (Vite)
-
-> Hier kannst du Häkchen setzen, sobald du den jeweiligen Schritt erledigt hast.
 
 ### 2.1 Grundsetup
 - [ ] React/Vite-Projekt erstellt
@@ -73,23 +95,33 @@
 ## 3. API-Tests – Bruno
 
 ### 3.1 Grundstruktur
-- [x] Bruno-Collection für Backend angelegt
-- [ ] Environments / Base-URL sauber konfiguriert
-- [ ] Kurze Beschreibung/Notizen in der Collection ergänzt
+- [x] Bruno-Collection für Backend angelegt (`api-tests/bruno/webeng-inspection`)
+- [x] Environment `local` mit Base-URL konfiguriert
 
 ### 3.2 Checklist-Flow
-- [x] Requests für Checklist-Endpunkte (GET/POST/PUT/DELETE)
+- [x] Requests für Checklist-Endpunkte angelegt:
+  - Create checklist
+  - Get all checklists
+  - Get checklist by id
+  - Update checklist
+  - Delete checklist
 - [x] Happy-Path getestet (z. B. „Checklist erstellen → abrufen → ändern → löschen“)
 - [ ] Negativfälle getestet (z. B. 404 bei unbekannter ID, Validierungsfehler)
 
 ### 3.3 Inspection-Flow
-- [x] Requests für Inspection-Endpunkte
-- [x] Happy-Path getestet (Inspection zu existierender Checklist anlegen)
+- [x] Requests für Inspection-Endpunkte angelegt:
+  - Create inspection
+  - Get all inspections
+  - Get inspection by id
+  - Update inspection status
+  - Delete inspection
+- [x] Happy-Path getestet (Inspection zu existierender Checklist anlegen, abrufen, löschen)
 - [ ] Negativfälle getestet (Checklist nicht vorhanden, ungültige Daten)
 
 ### 3.4 Step-Flow
-- [ ] Requests für Step-Endpunkte
-- [ ] Happy-Path getestet (Step zu Inspection anlegen, abrufen, ändern, löschen)
+- [ ] Requests für ChecklistStep-Endpunkte angelegt
+- [ ] Requests für InspectionStep-Endpunkte angelegt
+- [ ] Happy-Path getestet (Steps zu Checklist/Inspection anlegen, abrufen, ändern, löschen)
 - [ ] Negativfälle getestet
 
 ### 3.5 End-to-End-Szenarien
@@ -100,29 +132,26 @@
 ## 4. Planung & Architektur
 
 ### 4.1 Struktur & Layer
-- [x] Package-Struktur definiert (z. B. `entity`, `repository`, `service`, `controller`)
+- [x] Package-Struktur definiert (`entity`, `repository`, `service`, `controller`, `dto`)
 - [x] Trennung von Domänenschicht (Entities/Services) und Web-Schicht (Controller)
-- [ ] Kurze Text-Doku zur Architektur (1–2 Absätze, z. B. in `ARCHITECTURE.md`)
+- [ ] Kurze Text-Doku zur Architektur (1–2 Absätze, z. B. in `docs/ARCHITECTURE.md`)
 
 ### 4.2 Designentscheidungen dokumentieren
-- [ ] Entscheidung: Warum aktuell direkte Rückgabe von Entities (noch keine DTOs)
+- [ ] Entscheidung: Warum aktuell direkte Rückgabe von Entities (noch keine vollständige DTO-Schicht)
 - [ ] Hinweis: Wie ein DTO-Layer aussehen *könnte* (für spätere Erweiterung)
-- [ ] Erklärung der wichtigsten Relationen (Checklist ↔ Inspection ↔ Step)
+- [ ] Erklärung der wichtigsten Relationen (Checklist ↔ Inspection ↔ ChecklistStep/InspectionStep)
 
 
 ## 5. Fehleranalyse & Bugs
 
-> Dieser Bereich ist als laufende Liste gedacht.
-
 ### 5.1 Bug-Liste
-- [ ] Datei `BUGS.md` angelegt
-- [ ] Aktuell bekannte Bugs eingetragen (mit:
-      Repro-Schritte, erwartetes Verhalten, aktuelles Verhalten)
+- [ ] Datei `docs/BUGS.md` angelegt
+- [ ] Aktuell bekannte Bugs eingetragen (mit Repro-Schritten, erwartetes Verhalten, aktuelles Verhalten)
 - [ ] Für jeden Bug entschieden: „Fixen“ oder „bewusst offen lassen“
 
 ### 5.2 Technische Schulden
 - [ ] Stellen markiert, an denen du „Quick & Dirty“-Lösungen verwendest (z. B. Kommentare `// TODO`)
-- [ ] Liste dieser Stellen zentral gesammelt (z. B. in `TECH_DEBT.md`)
+- [ ] Liste dieser Stellen zentral gesammelt (z. B. in `docs/TECH_DEBT.md`)
 
 
 ## 6. Projektorga & Dokumentation

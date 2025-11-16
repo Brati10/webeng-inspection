@@ -1,0 +1,30 @@
+meta {
+  name: Create checklist step
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/checklists/{{checklistId}}/steps
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "description": "Prüfen, ob Türen abgeschlossen sind",
+    "requirement": "Alle Außentüren müssen abgeschlossen sein.",
+    "orderIndex": 1
+  }
+}
+
+tests {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("checklistStepId", res.body.id);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

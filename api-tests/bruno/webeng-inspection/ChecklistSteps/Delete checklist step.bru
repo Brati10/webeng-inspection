@@ -1,11 +1,11 @@
 meta {
-  name: Delete checklist
+  name: Delete checklist step
   type: http
   seq: 5
 }
 
 delete {
-  url: {{baseUrl}}/api/checklists/1
+  url: {{baseUrl}}/api/checklist-steps/{{checklistStepId}}
   body: none
   auth: inherit
 }

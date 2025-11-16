@@ -1,0 +1,16 @@
+meta {
+  name: Get steps for checklist
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/checklists/{{checklistId}}/steps
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
