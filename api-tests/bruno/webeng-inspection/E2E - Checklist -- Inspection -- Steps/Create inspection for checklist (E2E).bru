@@ -1,0 +1,32 @@
+meta {
+  name: Create inspection for checklist (E2E)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/inspections
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "checklistId": {{checklistId}},
+    "title": "E2E Bot",
+    "plantName": "Testobjekt Musterstraße 1",
+    "inspectionDate": "2025-01-15T09:00:00",
+    "generalComment": "War beim letzten Besuch nicht möglich, versuchen es heute erneut."
+  }
+}
+
+tests {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("inspectionId", res.body.id);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

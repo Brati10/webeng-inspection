@@ -1,0 +1,15 @@
+meta {
+  name: Delete inspection (E2E)
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/api/inspections/{{inspectionId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

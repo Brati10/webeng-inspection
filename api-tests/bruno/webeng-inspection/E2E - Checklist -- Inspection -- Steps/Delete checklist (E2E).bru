@@ -1,0 +1,15 @@
+meta {
+  name: Delete checklist (E2E)
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{baseUrl}}/api/checklists/{{checklistId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -125,8 +125,8 @@
 - [ ] Negativfälle getestet
 
 ### 3.5 End-to-End-Szenarien
-- [ ] E2E: Checklist → Inspection → Steps komplett durchgespielt
-- [ ] E2E-Szenario dokumentiert (kurze Beschreibung in Bruno oder README)
+- [x] E2E: Checklist → Inspection → Steps komplett durchgespielt
+- [x] E2E-Szenario dokumentiert (kurze Beschreibung in Bruno oder README)
 
 
 ## 4. Planung & Architektur

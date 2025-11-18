@@ -1,0 +1,20 @@
+meta {
+  name: Update inspection step status (E2E)
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/inspection-steps/{{inspectionStepId}}/status
+  body: text
+  auth: inherit
+}
+
+body:text {
+  PASSED
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

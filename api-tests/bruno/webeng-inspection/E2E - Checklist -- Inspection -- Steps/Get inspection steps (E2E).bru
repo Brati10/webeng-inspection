@@ -1,0 +1,27 @@
+meta {
+  name: Get inspection steps (E2E)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/inspections/{{inspectionId}}/steps
+  body: none
+  auth: inherit
+}
+
+tests {
+  const steps = res.body;
+  
+  if (!Array.isArray(steps) || steps.length === 0) {
+    throw new Error("Expected at least one InspectionStep for the E2E inspection.");
+  }
+  
+  // Ersten Step für weitere Requests speichern
+  bru.setEnvVar("inspectionStepId", steps[0].id);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

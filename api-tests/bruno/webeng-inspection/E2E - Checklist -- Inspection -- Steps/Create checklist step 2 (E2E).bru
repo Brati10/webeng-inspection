@@ -1,0 +1,30 @@
+meta {
+  name: Create checklist step 2 (E2E)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/checklists/{{checklistId}}/steps
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "description": "Türen prüfen",
+    "requirement": "Alle Außentüren müssen abgeschlossen sein.",
+    "orderIndex": 2
+  }
+}
+
+tests {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("checklistStepId2", res.body.id);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

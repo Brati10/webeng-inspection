@@ -1,0 +1,29 @@
+meta {
+  name: Create checklist (E2E)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/checklists
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "E2E – Wohnungsabnahme",
+    "description": "End-to-End-Test-Checkliste für den kompletten Flow."
+  }
+}
+
+tests {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("checklistId", res.body.id);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
