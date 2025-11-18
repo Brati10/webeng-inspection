@@ -8,8 +8,12 @@ import de.dhbw.webenginspection.entity.InspectionStep;
 import de.dhbw.webenginspection.entity.StepStatus;
 import de.dhbw.webenginspection.repository.ChecklistRepository;
 import de.dhbw.webenginspection.repository.InspectionRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +24,8 @@ public class InspectionService {
     
     private final InspectionRepository inspectionRepository;
     private final ChecklistRepository checklistRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(InspectionService.class);
 
     public InspectionService(InspectionRepository inspectionRepository,
                              ChecklistRepository checklistRepository) {
@@ -41,6 +47,8 @@ public class InspectionService {
      * Alle ChecklistSteps werden in InspectionSteps kopiert.
      */
     public Inspection createInspectionFromChecklist(InspectionCreateRequest request) {
+        log.info("Creating inspection for checklist {} at plant '{}'",
+             request.getChecklistId(), request.getPlantName());
         Checklist checklist = checklistRepository.findById(request.getChecklistId())
                 .orElseThrow(() -> new IllegalArgumentException("Checklist with id " + request.getChecklistId() + " not found"));
 

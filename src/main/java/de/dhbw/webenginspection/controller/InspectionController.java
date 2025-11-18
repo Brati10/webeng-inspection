@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -39,7 +40,7 @@ public class InspectionController {
      * Erzeugt eine Inspection auf Basis einer Checklist.
      */
     @PostMapping
-    public ResponseEntity<Inspection> create(@RequestBody InspectionCreateRequest request) {
+    public ResponseEntity<Inspection> create(@Valid @RequestBody InspectionCreateRequest request) {
         try {
             Inspection created = inspectionService.createInspectionFromChecklist(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
