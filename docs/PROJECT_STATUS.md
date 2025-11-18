@@ -63,7 +63,7 @@
 - [x] Globales Error-Handling mit `@ControllerAdvice`
 - [x] Einheitliches Fehler-Response-Format (z. B. Error-DTO)
 - [x] Bean Validation auf Request-Bodies (z. B. `@NotNull`, `@Size`, …)
-- [ ] Sinnvolles Logging eingerichtet (z. B. in Services/Controllern)
+- [x] Sinnvolles Logging eingerichtet (z. B. in Services/Controllern)
 - [ ] Basis-Tests mit MockMvc für zentrale Endpoints (Checklist, Inspection, Steps)
 - [ ] (Optional) Swagger / OpenAPI-Doku
 

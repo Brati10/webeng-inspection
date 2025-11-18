@@ -21,11 +21,11 @@ import java.util.List;
 @Service
 @Transactional
 public class InspectionService {
+
+    private static final Logger log = LoggerFactory.getLogger(InspectionService.class);
     
     private final InspectionRepository inspectionRepository;
     private final ChecklistRepository checklistRepository;
-
-    private static final Logger log = LoggerFactory.getLogger(InspectionService.class);
 
     public InspectionService(InspectionRepository inspectionRepository,
                              ChecklistRepository checklistRepository) {
@@ -73,19 +73,35 @@ public class InspectionService {
                 inspection.addStep(inspectionStep); // setzt auch inspection im Step
             }
         }
+        
+        Inspection saved = inspectionRepository.save(inspection);
+        log.info("Created inspection with id {} for checklist {}", saved.getId(), checklist.getId());
 
-        return inspectionRepository.save(inspection);
+        return saved;
     }
 
     public void deleteInspection(Long id) {
-        Inspection existing = getInspectionById(id);
-        inspectionRepository.delete(existing);
+        log.info("Deleting inspection with id {}", id);
+
+        if (!inspectionRepository.existsById(id)) {
+            log.warn("Inspection with id {} not found for deletion", id);
+            throw new IllegalArgumentException("Inspection with id " + id + " not found");
+        }
+        
+        inspectionRepository.deleteById(id);
+        log.info("Deleted inspection with id {}", id);
     }
 
     // einfache Status-Änderung (optional, kann man später ausbauen)
     public Inspection updateStatus(Long id, String newStatus) {
+        log.info("Updating status of inspection with id {} to {}", id, newStatus);
+        
         Inspection inspection = getInspectionById(id);
         inspection.setStatus(newStatus);
-        return inspectionRepository.save(inspection);
+
+        Inspection saved = inspectionRepository.save(inspection);
+        log.info("Updated status of inspection with id {} to {}", saved.getId(), newStatus);
+        
+        return saved;
     }
 }
