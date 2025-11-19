@@ -54,9 +54,9 @@ class InspectionControllerTest {
     void createInspection_withValidBody_returnsCreated() throws Exception {
         // 1. Test-Checklist in die DB legen, damit checklistId gültig ist
         Checklist checklist = new Checklist();
-        checklist.setName("Test Checklist");
-        checklist.setPlantName("Test Checklist PlantName");
-        checklist.setRecommendations("Test Checklist Recommendations");
+        checklist.setName("Test checklist for InspectionController test");
+        checklist.setPlantName("Test checklist plantName for InspectionController test");
+        checklist.setRecommendations("Test checklist recommendations for InspectionController test");
         Checklist savedChecklist = checklistRepository.save(checklist);
 
         // 2. Gültigen Request bauen
