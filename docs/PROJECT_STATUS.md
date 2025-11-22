@@ -64,7 +64,9 @@
 - [x] Einheitliches Fehler-Response-Format (z. B. Error-DTO)
 - [x] Bean Validation auf Request-Bodies (z. B. `@NotNull`, `@Size`, …)
 - [x] Sinnvolles Logging eingerichtet (z. B. in Services/Controllern)
-- [ ] Basis-Tests mit MockMvc für zentrale Endpoints (Checklist, Inspection, Steps)
+- [x] Basis-Tests mit MockMvc für Checklist
+- [x] Basis-Tests mit MockMvc für Inspection
+- [x] Basis-Tests mit MockMvc für Steps
 - [ ] (Optional) Swagger / OpenAPI-Doku
 
 
