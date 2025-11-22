@@ -69,6 +69,10 @@
 - [x] Basis-Tests mit MockMvc für Steps
 - [ ] (Optional) Swagger / OpenAPI-Doku
 
+### 1.7 Codequalität & Dokumentation
+- [ ] JavaDoc-Kommentare für zentrale Services (Checklist, Inspection, Steps) ergänzt
+- [ ] JavaDoc-Kommentare für zentrale Controller-Endpunkte ergänzt
+
 
 ## 2. Frontend – React (Vite)
 
