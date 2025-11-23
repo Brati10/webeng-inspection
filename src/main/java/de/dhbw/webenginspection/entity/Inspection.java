@@ -7,9 +7,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // kann man noch sauberer über DTOs lösen, evtl. ToDo für später
+/**
+ * JPA-Entität, die eine konkrete Durchführung einer Inspection repräsentiert.
+ * Verknüpft eine {@link Checklist} mit einem Zeitpunkt, einem Status und den
+ * dazugehörigen {@link InspectionStep}-Instanzen, in denen die Ergebnisse der
+ * einzelnen Schritte festgehalten werden.
+ */
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Inspection {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,18 +32,27 @@ public class Inspection {
     // Status als String (z. B. "PLANNED", "IN_PROGRESS", "COMPLETED")
     private String status;
 
+    /**
+     * Optionaler allgemeiner Kommentar zur Inspection, z.&nbsp;B. für
+     * übergreifende Beobachtungen oder Hinweise.
+     */
     @Column(length = 2000)
     private String generalComment;
 
+    /**
+     * Die zugrunde liegende {@link Checklist}, auf deren Basis diese Inspection
+     * durchgeführt wird.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "checklist_id")
     private Checklist checklist;
 
-    @OneToMany(
-            mappedBy = "inspection",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    /**
+     * Alle konkreten Schritte dieser Inspection. Die Beziehung ist
+     * bidirektional und wird über das Feld {@code inspection} in
+     * {@link InspectionStep} abgebildet.
+     */
+    @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InspectionStep> steps = new ArrayList<>();
 
     // --- Konstruktoren ---
@@ -52,13 +68,25 @@ public class Inspection {
         this.status = status;
     }
 
-    // Methoden für Bidirektionalität
+    // --- Methoden für Bidirektionalität ---
 
+    /**
+     * Fügt der Inspection einen neuen Schritt hinzu und setzt die
+     * bidirektionale Beziehung korrekt.
+     *
+     * @param step der hinzuzufügende {@link InspectionStep}
+     */
     public void addStep(InspectionStep step) {
         steps.add(step);
         step.setInspection(this);
     }
 
+    /**
+     * Entfernt einen Schritt aus der Inspection und löst die bidirektionale
+     * Beziehung.
+     *
+     * @param step der zu entfernende {@link InspectionStep}
+     */
     public void removeStep(InspectionStep step) {
         steps.remove(step);
         step.setInspection(null);

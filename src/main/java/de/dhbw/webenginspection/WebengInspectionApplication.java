@@ -9,5 +9,4 @@ public class WebengInspectionApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WebengInspectionApplication.class, args);
 	}
-
 }

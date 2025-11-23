@@ -1,31 +1,51 @@
 package de.dhbw.webenginspection.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // kann man noch sauberer über DTOs lösen, evtl. ToDo für später
+/**
+ * JPA-Entität, die einen einzelnen Prüfschritt innerhalb einer
+ * {@link Checklist} repräsentiert. Jeder Schritt enthält eine Beschreibung,
+ * eine detaillierte Anforderung sowie eine Reihenfolge innerhalb der
+ * Checkliste.
+ */
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class ChecklistStep {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Beschreibung des Prüfschritts
+    /**
+     * Beschreibung des Prüfschritts, wie er in der UI dargestellt wird.
+     * Beispiel: "Überprüfung des Ölstands".
+     */
     @Column(nullable = false, length = 1000)
     private String description;
 
-    // Konkrete Anforderung
+    /**
+     * Optionale genauere Anforderung zu diesem Prüfschritt. Beispiel: "Ölstand
+     * muss zwischen Min und Max liegen".
+     */
     @Column(length = 1000)
     private String requirement;
 
-    // Reihenfolge in der Checkliste
+    /**
+     * Reihenfolge des Prüfschritts innerhalb der Checkliste. Niedrige Werte
+     * bedeuten frühere Positionen.
+     */
     private Integer orderIndex;
 
+    /**
+     * Die Checkliste, zu der dieser Schritt gehört. Wird in JSON ausgeblendet,
+     * um zyklische Referenzen zu verhindern.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "checklist_id")
-    @JsonIgnore // verhindert Endlos-Schleifen bei JSON (Checklist -> Steps -> Checklist -> ...)
+    @JsonIgnore // verhindert Endlos-Schleifen bei JSON (Checklist -> Steps ->
+                // Checklist -> ...)
     private Checklist checklist;
 
     // --- Konstruktoren ---

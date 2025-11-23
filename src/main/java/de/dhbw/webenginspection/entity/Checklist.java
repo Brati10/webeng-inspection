@@ -1,14 +1,20 @@
 package de.dhbw.webenginspection.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // kann man noch sauberer über DTOs lösen, evtl. ToDo für später
+/**
+ * JPA-Entität, die eine Checkliste repräsentiert. Enthält grundlegende
+ * Metadaten (Name, Anlage, Empfehlungen) sowie eine Liste zugehöriger
+ * {@link ChecklistStep}-Entitäten. Stellt außerdem Hilfsmethoden zur Verwaltung
+ * der bidirektionalen Beziehung bereit.
+ */
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Checklist {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,15 +24,20 @@ public class Checklist {
     // Name der Anlage
     private String plantName;
 
-    // Allgemeine Empfehlungen / Hinweise
+    /**
+     * Optionale allgemeine Empfehlungen oder Hinweise zur Checkliste. Wird
+     * typischerweise im Vorfeld einer Inspection verwendet.
+     */
     @Column(length = 2000)
     private String recommendations;
 
-    @OneToMany(
-        mappedBy = "checklist",
-        cascade = CascadeType.ALL,
-        orphanRemoval = true
-    )
+    /**
+     * Liste der zugehörigen Schritte dieser Checkliste. Die Beziehung ist
+     * bidirektional und wird über das Feld {@code checklist} in
+     * {@link ChecklistStep} abgebildet. Änderungen werden automatisch
+     * persistiert (CascadeType.ALL).
+     */
+    @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChecklistStep> steps = new ArrayList<>();
 
     // --- Konstruktoren ---
@@ -43,11 +54,23 @@ public class Checklist {
 
     // --- Methoden für Bidirektionalität ---
 
+    /**
+     * Fügt der Checkliste einen neuen Schritt hinzu und setzt die
+     * bidirektionale Beziehung korrekt.
+     *
+     * @param step der hinzuzufügende {@link ChecklistStep}
+     */
     public void addStep(ChecklistStep step) {
         steps.add(step);
         step.setChecklist(this);
     }
 
+    /**
+     * Entfernt einen Schritt aus der Checkliste und löst die bidirektionale
+     * Beziehung.
+     *
+     * @param step der zu entfernende {@link ChecklistStep}
+     */
     public void removeStep(ChecklistStep step) {
         steps.remove(step);
         step.setChecklist(null);

@@ -8,11 +8,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST-Controller zum Verwalten von {@link ChecklistStep}-Entitäten. Bietet
+ * Endpunkte zum Abrufen, Erstellen, Aktualisieren und Löschen von Schritten
+ * innerhalb einer Checkliste.
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
 public class ChecklistStepController {
-    
+
     private final ChecklistStepService checklistStepService;
 
     public ChecklistStepController(ChecklistStepService checklistStepService) {
@@ -20,20 +25,27 @@ public class ChecklistStepController {
     }
 
     /**
-     * Alle Schritte einer Checkliste abrufen (z. B. für Detailansicht).
-     * GET /api/checklists/{checklistId}/steps
+     * Gibt alle Schritte einer bestimmten Checkliste zurück.
+     *
+     * @param checklistId die ID der Checkliste
+     * @return eine Liste aller zugehörigen {@link ChecklistStep}-Entitäten
      */
     @GetMapping("/checklists/{checklistId}/steps")
-    public List<ChecklistStep> getStepsForChecklist(@PathVariable Long checklistId) {
+    public List<ChecklistStep> getStepsForChecklist(@PathVariable
+    Long checklistId) {
         return checklistStepService.getStepsForChecklist(checklistId);
     }
 
     /**
-     * Einzelnen ChecklistStep per ID abrufen.
-     * GET /api/checklist-steps/{id}
+     * Gibt einen einzelnen ChecklistStep anhand seiner ID zurück.
+     *
+     * @param id die ID des gewünschten Schritts
+     * @return {@code 200 OK} mit dem Schritt oder {@code 404 Not Found}, falls
+     * kein Schritt mit der ID existiert
      */
     @GetMapping("/checklist-steps/{id}")
-    public ResponseEntity<ChecklistStep> getStepById(@PathVariable Long id) {
+    public ResponseEntity<ChecklistStep> getStepById(@PathVariable
+    Long id) {
         try {
             ChecklistStep step = checklistStepService.getStepById(id);
             return ResponseEntity.ok(step);
@@ -43,13 +55,17 @@ public class ChecklistStepController {
     }
 
     /**
-     * Neuen Schritt für eine Checkliste anlegen.
-     * POST /api/checklists/{checklistId}/steps
+     * Erstellt einen neuen Schritt für eine bestehende Checkliste.
+     *
+     * @param checklistId die ID der Checkliste, zu der der Schritt gehört
+     * @param step die zu erstellende {@link ChecklistStep}-Entität
+     * @return {@code 201 Created} mit dem neu erstellten Schritt oder
+     * {@code 404 Not Found}, wenn die Checkliste nicht existiert
      */
     @PostMapping("/checklists/{checklistId}/steps")
-    public ResponseEntity<ChecklistStep> createStep(
-            @PathVariable Long checklistId,
-            @RequestBody ChecklistStep step) {
+    public ResponseEntity<ChecklistStep> createStep(@PathVariable
+    Long checklistId, @RequestBody
+    ChecklistStep step) {
 
         try {
             ChecklistStep created = checklistStepService.createStep(checklistId, step);
@@ -61,13 +77,18 @@ public class ChecklistStepController {
     }
 
     /**
-     * Vorhandenen Schritt aktualisieren.
-     * PUT /api/checklist-steps/{id}
+     * Aktualisiert einen bestehenden Schritt einer Checkliste.
+     *
+     * @param id die ID des zu aktualisierenden Schritts
+     * @param updated ein Objekt mit den neuen Werten (Beschreibung,
+     * Requirement, orderIndex)
+     * @return {@code 200 OK} mit dem aktualisierten Schritt oder
+     * {@code 404 Not Found}, wenn der Schritt nicht existiert
      */
     @PutMapping("/checklist-steps/{id}")
-    public ResponseEntity<ChecklistStep> updateStep(
-            @PathVariable Long id,
-            @RequestBody ChecklistStep updated) {
+    public ResponseEntity<ChecklistStep> updateStep(@PathVariable
+    Long id, @RequestBody
+    ChecklistStep updated) {
 
         try {
             ChecklistStep saved = checklistStepService.updateStep(id, updated);
@@ -78,11 +99,15 @@ public class ChecklistStepController {
     }
 
     /**
-     * Schritt löschen.
-     * DELETE /api/checklist-steps/{id}
+     * Löscht einen bestehenden Schritt anhand seiner ID.
+     *
+     * @param id die ID des zu löschenden Schritts
+     * @return {@code 204 No Content} bei Erfolg oder {@code 404 Not Found},
+     * wenn der Schritt nicht existiert
      */
     @DeleteMapping("/checklist-steps/{id}")
-    public ResponseEntity<Void> deleteStep(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStep(@PathVariable
+    Long id) {
         try {
             checklistStepService.deleteStep(id);
             return ResponseEntity.noContent().build();

@@ -12,30 +12,48 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * Service zur Verwaltung von {@link ChecklistStep}-Entitäten. Beinhaltet
+ * Funktionen zum Lesen, Erstellen, Aktualisieren und Löschen von Schritten
+ * innerhalb einer Checkliste. Stellt sicher, dass jeder Step korrekt mit seiner
+ * zugehörigen {@link Checklist} verknüpft wird.
+ */
 @Service
 @Transactional
 public class ChecklistStepService {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ChecklistStepService.class);
 
     private final ChecklistStepRepository checklistStepRepository;
+
     private final ChecklistRepository checklistRepository;
 
     public ChecklistStepService(ChecklistStepRepository checklistStepRepository,
-                                ChecklistRepository checklistRepository) {
+            ChecklistRepository checklistRepository) {
         this.checklistStepRepository = checklistStepRepository;
         this.checklistRepository = checklistRepository;
     }
 
     /**
-     * Alle Schritte einer Checkliste, sortiert nach orderIndex.
+     * Gibt alle Schritte einer Checkliste zurück, sortiert nach dem Feld
+     * {@code orderIndex}.
+     *
+     * @param checklistId die ID der Checkliste, deren Schritte abgefragt werden
+     * sollen
+     * @return eine sortierte Liste der zugehörigen
+     * {@link ChecklistStep}-Entitäten
      */
     public List<ChecklistStep> getStepsForChecklist(Long checklistId) {
         return checklistStepRepository.findByChecklistIdOrderByOrderIndex(checklistId);
     }
 
     /**
-     * Einzelnen Schritt per ID holen oder IllegalArgumentException werfen.
+     * Gibt einen einzelnen ChecklistStep anhand seiner ID zurück.
+     *
+     * @param id die ID des gesuchten Schritt-Objekts
+     * @return der gefundene {@link ChecklistStep}
+     * @throws IllegalArgumentException wenn kein Schritt mit der angegebenen ID
+     * existiert
      */
     public ChecklistStep getStepById(Long id) {
         return checklistStepRepository.findById(id)
@@ -43,7 +61,15 @@ public class ChecklistStepService {
     }
 
     /**
-     * Neuen Schritt für eine bestehende Checkliste anlegen.
+     * Erstellt einen neuen Schritt für eine bestehende Checkliste. Setzt die
+     * bidirektionale Beziehung korrekt, indem dem Step die passende Checklist
+     * zugewiesen wird.
+     *
+     * @param checklistId die ID der Checkliste, zu der der neue Schritt gehört
+     * @param step die zu erstellende {@link ChecklistStep}-Entität
+     * @return der gespeicherte Schritt mit generierter ID
+     * @throws IllegalArgumentException wenn keine Checkliste mit der
+     * angegebenen ID existiert
      */
     public ChecklistStep createStep(Long checklistId, ChecklistStep step) {
         log.info("Creating new step for checklist with id {}", checklistId);
@@ -60,7 +86,14 @@ public class ChecklistStepService {
     }
 
     /**
-     * Vorhandenen Schritt aktualisieren (Beschreibung, Requirement, Reihenfolge).
+     * Aktualisiert einen bestehenden Schritt einer Checkliste. Aktualisiert
+     * Beschreibung, Anforderung und Reihenfolge-Index.
+     *
+     * @param id die ID des zu aktualisierenden Schritts
+     * @param updated ein Objekt mit den neuen Werten für den Schritt
+     * @return der aktualisierte und gespeicherte {@link ChecklistStep}
+     * @throws IllegalArgumentException wenn kein Schritt mit der angegebenen ID
+     * existiert
      */
     public ChecklistStep updateStep(Long id, ChecklistStep updated) {
         log.info("Updating checklist step with id {}", id);
@@ -77,12 +110,16 @@ public class ChecklistStepService {
     }
 
     /**
-     * Schritt löschen.
+     * Löscht einen bestehenden Schritt anhand seiner ID.
+     *
+     * @param id die ID des zu löschenden Schritts
+     * @throws IllegalArgumentException wenn kein Schritt mit der angegebenen ID
+     * existiert
      */
     public void deleteStep(Long id) {
         log.info("Deleting checklist step with id {}", id);
 
-        if(!checklistStepRepository.existsById(id)) {
+        if (!checklistStepRepository.existsById(id)) {
             log.warn("ChecklistStep with id {} not found for deletion", id);
             throw new IllegalArgumentException("ChecklistStep with id " + id + " not found");
         }
