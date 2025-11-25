@@ -1,8 +1,39 @@
+import { useEffect, useState } from "react";
+import {
+  getAllChecklists,
+  type Checklist,
+} from "../services/api/checklistService";
+
 export default function ChecklistListPage() {
+  const [checklists, setChecklists] = useState<Checklist[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAllChecklists()
+      .then((data) => setChecklists(data))
+      .catch((err) => {
+        console.error(err);
+        setError("Fehler beim Laden der Checklists");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p>Lade Checklists...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
     <div>
-      <h1>Checklist Übersicht</h1>
-      <p>Hier kommt später die Liste aller Checklists hin.</p>
+      <h1>Checklists</h1>
+      <ul>
+        {checklists.map((c) => (
+          <li key={c.id}>
+            <strong>{c.name}</strong> – {c.plantName}
+            <br />
+            <small>{c.recommendations}</small>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
