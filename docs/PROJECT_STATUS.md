@@ -87,19 +87,19 @@
 
 ### 2.1 Grundsetup
 
-- [ ] React/Vite-Projekt erstellt
-- [ ] Projektstruktur (Pages/Components/Services) definiert
-- [ ] Basis-Routing eingerichtet
+- [x] React/Vite-Projekt erstellt
+- [x] Projektstruktur (Pages/Components/Services) definiert
+- [x] Basis-Routing eingerichtet
 
 ### 2.2 API-Anbindung
 
-- [ ] API-Service-Layer zum Backend (Fetch/Axios)
+- [x] API-Service-Layer zum Backend (Fetch/Axios)
 - [ ] Fehler- und Loading-Handling im API-Layer
-- [ ] Environment-/Config für Backend-URL
+- [x] Environment-/Config für Backend-URL
 
 ### 2.3 Views / Seiten
 
-- [ ] Übersichtsliste für Checklists
+- [x] Übersichtsliste für Checklists
 - [ ] Detailansicht für eine Checklist inkl. zugehöriger Inspections
 - [ ] Detailansicht für eine Inspection inkl. Steps
 - [ ] Formulare für Erstellen/Bearbeiten (mind. für einen Typ: Checklist oder Inspection oder Step)
