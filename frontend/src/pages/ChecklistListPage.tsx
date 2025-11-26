@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   getAllChecklists,
   type Checklist,
@@ -28,7 +29,9 @@ export default function ChecklistListPage() {
       <ul>
         {checklists.map((c) => (
           <li key={c.id}>
-            <strong>{c.name}</strong> – {c.plantName}
+            <Link to={`/checklists/${c.id}`}>
+              <strong>{c.name}</strong> – {c.plantName}
+            </Link>
             <br />
             <small>{c.recommendations}</small>
           </li>
