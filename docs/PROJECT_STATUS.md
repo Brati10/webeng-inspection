@@ -100,7 +100,7 @@
 ### 2.3 Views / Seiten
 
 - [x] Übersichtsliste für Checklists
-- [ ] Detailansicht für eine Checklist inkl. zugehöriger Inspections
+- [x] Detailansicht für eine Checklist inkl. zugehöriger Inspections
 - [ ] Detailansicht für eine Inspection inkl. Steps
 - [ ] Formulare für Erstellen/Bearbeiten (mind. für einen Typ: Checklist oder Inspection oder Step)
 
