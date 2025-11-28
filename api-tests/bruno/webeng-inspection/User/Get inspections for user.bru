@@ -1,0 +1,15 @@
+meta {
+  name: Get inspections for user
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/inspections/by-user/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

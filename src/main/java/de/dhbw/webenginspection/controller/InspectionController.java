@@ -55,6 +55,23 @@ public class InspectionController {
     }
 
     /**
+     * Liefert alle Inspektionen, die einem bestimmten Benutzer
+     * (verantwortlicher Mitarbeiter) zugeordnet sind.
+     *
+     * Beispiel: GET /api/inspections/by-user/1
+     *
+     * @param userId ID des Benutzers
+     * @return Liste der Inspektionen des Users (ggf. leer, aber niemals
+     * {@code null})
+     */
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<List<Inspection>> getByUser(@PathVariable
+    Long userId) {
+        List<Inspection> inspections = inspectionService.getInspectionsForUser(userId);
+        return ResponseEntity.ok(inspections);
+    }
+
+    /**
      * Erstellt eine neue Inspection auf Basis einer bestehenden Checklist. Die
      * Details werden aus dem Request gelesen, die verknüpfte Checklist wird
      * über deren ID ermittelt.

@@ -122,6 +122,19 @@ public class InspectionService {
     }
 
     /**
+     * Liefert alle Inspektionen, die einem bestimmten Benutzer zugeordnet sind.
+     *
+     * @param userId ID des verantwortlichen Users
+     * @return Liste der Inspektionen des Users (ggf. leer, aber niemals
+     * {@code null})
+     */
+    @Transactional(readOnly = true)
+    public List<Inspection> getInspectionsForUser(Long userId) {
+        log.info("Fetching inspections for user with id {}", userId);
+        return inspectionRepository.findByAssignedInspectorId(userId);
+    }
+
+    /**
      * Aktualisiert den Status einer bestehenden Inspection.
      *
      * @param id die ID der zu aktualisierenden Inspection

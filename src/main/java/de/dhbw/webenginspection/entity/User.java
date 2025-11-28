@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * JPA-Entität, die einen Benutzer der Anwendung repräsentiert. Ein User kann
  * für mehrere Inspektionen als verantwortlicher Mitarbeiter eingetragen sein.
  */
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inspections", "passwordHash" })
 public class User {
 
     @Id

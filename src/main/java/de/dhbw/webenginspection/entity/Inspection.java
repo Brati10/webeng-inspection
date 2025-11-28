@@ -27,10 +27,28 @@ public class Inspection {
     // Name der Anlage (kann von Checklist kommen oder abweichen)
     private String plantName;
 
-    private LocalDateTime inspectionDate;
+    /**
+     * Status der Inspektion (geplant / in Bearbeitung / abgeschlossen).
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private InspectionStatus status = InspectionStatus.PLANNED;
 
-    // Status als String (z. B. "PLANNED", "IN_PROGRESS", "COMPLETED")
-    private String status;
+    /**
+     * Geplanter Zeitpunkt der Inspektion (optional, kann auch nur für Anzeige
+     * genutzt werden).
+     */
+    private LocalDateTime plannedDate;
+
+    /**
+     * Zeitpunkt, zu dem die Inspektion gestartet wurde.
+     */
+    private LocalDateTime startedAt;
+
+    /**
+     * Zeitpunkt, zu dem die Inspektion abgeschlossen wurde.
+     */
+    private LocalDateTime finishedAt;
 
     /**
      * Optionaler allgemeiner Kommentar zur Inspection, z.&nbsp;B. für
@@ -68,10 +86,13 @@ public class Inspection {
 
     }
 
-    public Inspection(String title, String plantName, LocalDateTime inspectionDate, String status) {
+    public Inspection(String title, String plantName, InspectionStatus status, LocalDateTime plannedDate,
+            LocalDateTime startedAt, LocalDateTime finishedAt) {
         this.title = title;
         this.plantName = plantName;
-        this.inspectionDate = inspectionDate;
+        this.plannedDate = plannedDate;
+        this.startedAt = startedAt;
+        this.finishedAt = finishedAt;
         this.status = status;
     }
 
@@ -105,60 +126,76 @@ public class Inspection {
         return id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getPlantName() {
-        return plantName;
-    }
-
-    public LocalDateTime getInspectionDate() {
-        return inspectionDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getGeneralComment() {
-        return generalComment;
-    }
-
-    public Checklist getChecklist() {
-        return checklist;
-    }
-
-    public List<InspectionStep> getSteps() {
-        return steps;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
+    public String getPlantName() {
+        return plantName;
+    }
+
     public void setPlantName(String plantName) {
         this.plantName = plantName;
     }
 
-    public void setInspectionDate(LocalDateTime inspectionDate) {
-        this.inspectionDate = inspectionDate;
+    public InspectionStatus getStatus() {
+        return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InspectionStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getPlannedDate() {
+        return plannedDate;
+    }
+
+    public void setPlannedDate(LocalDateTime plannedDate) {
+        this.plannedDate = plannedDate;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public LocalDateTime getFinishedAt() {
+        return finishedAt;
+    }
+
+    public void setFinishedAt(LocalDateTime finishedAt) {
+        this.finishedAt = finishedAt;
+    }
+
+    public String getGeneralComment() {
+        return generalComment;
     }
 
     public void setGeneralComment(String generalComment) {
         this.generalComment = generalComment;
     }
 
+    public Checklist getChecklist() {
+        return checklist;
+    }
+
     public void setChecklist(Checklist checklist) {
         this.checklist = checklist;
+    }
+
+    public List<InspectionStep> getSteps() {
+        return steps;
     }
 
     public void setSteps(List<InspectionStep> steps) {

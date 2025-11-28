@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface InspectionRepository extends JpaRepository<Inspection, Long> {
-    
-    // Alle Inspektionen mit einem bestimmten Status (z. B. PLANNED, IN_PROGRESS, COMPLETED)
+
+    // Alle Inspektionen mit einem bestimmten Status (z. B. PLANNED,
+    // IN_PROGRESS, COMPLETED)
     List<Inspection> findByStatus(String status);
 
     // Inspektionen für eine bestimmte Anlage
@@ -16,4 +17,8 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
 
     // Geplante / durchgeführte Inspektionen in einem Zeitraum
     List<Inspection> findByInspectionDateBetween(LocalDateTime from, LocalDateTime to);
+
+    // Inspektionen, die einem bestimmten User (verantwortlicher Mitarbeiter)
+    // zugeordnet sind
+    List<Inspection> findByAssignedInspectorId(Long userId);
 }
