@@ -4,6 +4,7 @@ import de.dhbw.webenginspection.dto.InspectionCreateRequest;
 import de.dhbw.webenginspection.entity.Checklist;
 import de.dhbw.webenginspection.entity.ChecklistStep;
 import de.dhbw.webenginspection.entity.Inspection;
+import de.dhbw.webenginspection.entity.InspectionStatus;
 import de.dhbw.webenginspection.entity.InspectionStep;
 import de.dhbw.webenginspection.entity.StepStatus;
 import de.dhbw.webenginspection.repository.ChecklistRepository;
@@ -88,9 +89,9 @@ public class InspectionService {
 
         inspection.setTitle(request.getTitle() != null ? request.getTitle() : checklist.getName());
         inspection.setPlantName(request.getPlantName() != null ? request.getPlantName() : checklist.getPlantName());
-        inspection.setInspectionDate(
+        inspection.setPlannedDate(
                 request.getInspectionDate() != null ? request.getInspectionDate() : LocalDateTime.now());
-        inspection.setStatus("PLANNED");
+        inspection.setStatus(InspectionStatus.PLANNED);
         inspection.setGeneralComment(request.getGeneralComment());
 
         Long responsibleUserId = request.getResponsibleUserId();
