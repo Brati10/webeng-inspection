@@ -55,6 +55,13 @@ public class Inspection {
     @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InspectionStep> steps = new ArrayList<>();
 
+    /**
+     * Verantwortlicher Mitarbeiter, der diese Inspection durchführt.
+     */
+    @ManyToOne
+    @JoinColumn(name = "assigned_inspector_id")
+    private User assignedInspector;
+
     // --- Konstruktoren ---
 
     public Inspection() {
@@ -156,5 +163,13 @@ public class Inspection {
 
     public void setSteps(List<InspectionStep> steps) {
         this.steps = steps;
+    }
+
+    public User getAssignedInspector() {
+        return assignedInspector;
+    }
+
+    public void setAssignedInspector(User assignedInspector) {
+        this.assignedInspector = assignedInspector;
     }
 }

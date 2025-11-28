@@ -91,10 +91,10 @@
 
 ### 1.8 User & Authentifizierung
 
-- [ ] Entity `User` angelegt (z. B. Felder: `id`, `username`, `passwordHash`, `displayName`, `role`)
-- [ ] (Optional) Enum `UserRole` angelegt (z. B. `ADMIN`, `INSPECTOR`)
-- [ ] Relation `User` ↔ `Inspection` modelliert (z. B. `assignedInspector`)
-- [ ] `UserRepository` angelegt
+- [x] Entity `User` angelegt (z. B. Felder: `id`, `username`, `passwordHash`, `displayName`, `role`)
+- [x] Enum `UserRole` angelegt (z. B. `ADMIN`, `INSPECTOR`)
+- [x] Relation `User` ↔ `Inspection` modelliert (z. B. `assignedInspector`)
+- [x] `UserRepository` angelegt
 - [ ] `UserService` implementiert (Verwaltung von Benutzern, Passwort-Hashing, Suche nach Username)
 - [ ] `AuthController` implementiert (z. B. `/api/auth/login`, `/api/auth/me`)
 - [ ] Spring Security Grundkonfiguration eingerichtet

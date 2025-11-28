@@ -55,6 +55,12 @@ public class InspectionCreateRequest {
     @Size(max = 2000, message = "generalComment must not exceed 2000 characters")
     private String generalComment;
 
+    /**
+     * ID des verantwortlichen Users, der die Inspection durchführen soll.
+     */
+    @NotNull
+    private Long responsibleUserId;
+
     public InspectionCreateRequest() {
     }
 
@@ -96,5 +102,13 @@ public class InspectionCreateRequest {
 
     public void setGeneralComment(String generalComment) {
         this.generalComment = generalComment;
+    }
+
+    public Long getResponsibleUserId() {
+        return responsibleUserId;
+    }
+
+    public void setResponsibleUserId(Long responsibleUserId) {
+        this.responsibleUserId = responsibleUserId;
     }
 }

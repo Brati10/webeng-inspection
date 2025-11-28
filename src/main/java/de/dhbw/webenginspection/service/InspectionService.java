@@ -8,6 +8,8 @@ import de.dhbw.webenginspection.entity.InspectionStep;
 import de.dhbw.webenginspection.entity.StepStatus;
 import de.dhbw.webenginspection.repository.ChecklistRepository;
 import de.dhbw.webenginspection.repository.InspectionRepository;
+import de.dhbw.webenginspection.entity.User;
+import de.dhbw.webenginspection.repository.UserRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +36,13 @@ public class InspectionService {
 
     private final ChecklistRepository checklistRepository;
 
-    public InspectionService(InspectionRepository inspectionRepository, ChecklistRepository checklistRepository) {
+    private final UserRepository userRepository;
+
+    public InspectionService(InspectionRepository inspectionRepository, ChecklistRepository checklistRepository,
+            UserRepository userRepository) {
         this.inspectionRepository = inspectionRepository;
         this.checklistRepository = checklistRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Inspection> getAllInspections() {
@@ -86,6 +92,12 @@ public class InspectionService {
                 request.getInspectionDate() != null ? request.getInspectionDate() : LocalDateTime.now());
         inspection.setStatus("PLANNED");
         inspection.setGeneralComment(request.getGeneralComment());
+
+        Long responsibleUserId = request.getResponsibleUserId();
+        User responsibleUser = userRepository.findById(responsibleUserId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + responsibleUserId + " not found"));
+
+        inspection.setAssignedInspector(responsibleUser);
 
         // Steps aus der Checklist kopieren
         if (checklist.getSteps() != null) {
