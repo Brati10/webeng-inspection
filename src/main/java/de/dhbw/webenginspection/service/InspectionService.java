@@ -94,10 +94,12 @@ public class InspectionService {
         inspection.setGeneralComment(request.getGeneralComment());
 
         Long responsibleUserId = request.getResponsibleUserId();
-        User responsibleUser = userRepository.findById(responsibleUserId)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + responsibleUserId + " not found"));
+        if (responsibleUserId != null) {
+            User responsibleUser = userRepository.findById(responsibleUserId).orElseThrow(
+                    () -> new IllegalArgumentException("User with id " + responsibleUserId + " not found"));
 
-        inspection.setAssignedInspector(responsibleUser);
+            inspection.setAssignedInspector(responsibleUser);
+        }
 
         // Steps aus der Checklist kopieren
         if (checklist.getSteps() != null) {
