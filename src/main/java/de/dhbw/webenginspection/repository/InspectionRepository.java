@@ -16,7 +16,7 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
     List<Inspection> findByPlantName(String plantName);
 
     // Geplante / durchgeführte Inspektionen in einem Zeitraum
-    List<Inspection> findByInspectionDateBetween(LocalDateTime from, LocalDateTime to);
+    List<Inspection> findByPlannedDateBetween(LocalDateTime from, LocalDateTime to);
 
     // Inspektionen, die einem bestimmten User (verantwortlicher Mitarbeiter)
     // zugeordnet sind

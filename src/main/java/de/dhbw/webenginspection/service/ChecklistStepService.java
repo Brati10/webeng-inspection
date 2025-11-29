@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service zur Verwaltung von {@link ChecklistStep}-Entitäten. Beinhaltet
@@ -41,9 +42,11 @@ public class ChecklistStepService {
      * @param checklistId die ID der Checkliste, deren Schritte abgefragt werden
      * sollen
      * @return eine sortierte Liste der zugehörigen
-     * {@link ChecklistStep}-Entitäten
+     * {@link ChecklistStep}-Entitäten (niemals {@code null})
      */
+    @Transactional(readOnly = true)
     public List<ChecklistStep> getStepsForChecklist(Long checklistId) {
+        log.info("Fetching steps for checklist with id {}", checklistId);
         return checklistStepRepository.findByChecklistIdOrderByOrderIndex(checklistId);
     }
 
@@ -51,13 +54,12 @@ public class ChecklistStepService {
      * Gibt einen einzelnen ChecklistStep anhand seiner ID zurück.
      *
      * @param id die ID des gesuchten Schritt-Objekts
-     * @return der gefundene {@link ChecklistStep}
-     * @throws IllegalArgumentException wenn kein Schritt mit der angegebenen ID
-     * existiert
+     * @return ein Optional mit dem gefundenen {@link ChecklistStep}, oder leer wenn nicht existiert
      */
-    public ChecklistStep getStepById(Long id) {
-        return checklistStepRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("ChecklistStep with id " + id + " not found"));
+    @Transactional(readOnly = true)
+    public Optional<ChecklistStep> getStepById(Long id) {
+        log.info("Fetching checklist step with id {}", id);
+        return checklistStepRepository.findById(id);
     }
 
     /**
@@ -97,7 +99,9 @@ public class ChecklistStepService {
      */
     public ChecklistStep updateStep(Long id, ChecklistStep updated) {
         log.info("Updating checklist step with id {}", id);
-        ChecklistStep existing = getStepById(id);
+        
+        ChecklistStep existing = getStepById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ChecklistStep with id " + id + " not found"));
 
         existing.setDescription(updated.getDescription());
         existing.setRequirement(updated.getRequirement());

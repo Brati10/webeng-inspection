@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service zur Verwaltung von Checklisten. Bietet Funktionen zum Erstellen,
@@ -30,7 +31,13 @@ public class ChecklistService {
         this.checklistRepository = checklistRepository;
     }
 
+    /**
+     * Gibt alle vorhandenen Checklisten zurück.
+     *
+     * @return eine Liste aller {@link Checklist}-Entitäten (niemals {@code null})
+     */
     public List<Checklist> getAllChecklists() {
+        log.info("Fetching all checklists");
         return checklistRepository.findAll();
     }
 
@@ -38,13 +45,12 @@ public class ChecklistService {
      * Gibt die Checklist mit der angegebenen ID zurück.
      *
      * @param id die eindeutige ID der gesuchten Checklist
-     * @return die gefundene {@link Checklist}
-     * @throws IllegalArgumentException wenn keine Checklist mit der ID
-     * existiert
+     * @return ein Optional mit der gefundenen {@link Checklist}, oder leer wenn nicht existiert
      */
-    public Checklist getChecklistById(Long id) {
-        return checklistRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Checklist with id " + id + " not found"));
+    @Transactional(readOnly = true)
+    public Optional<Checklist> getChecklistById(Long id) {
+        log.info("Fetching checklist with id {}", id);
+        return checklistRepository.findById(id);
     }
 
     /**
@@ -86,7 +92,9 @@ public class ChecklistService {
      */
     public Checklist updateChecklist(Long id, Checklist updated) {
         log.info("Updating checklist with id {}", id);
-        Checklist existing = getChecklistById(id);
+        
+        Checklist existing = getChecklistById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Checklist with id " + id + " not found"));
 
         existing.setName(updated.getName());
         existing.setPlantName(updated.getPlantName());

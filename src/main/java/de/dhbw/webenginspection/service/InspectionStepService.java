@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service zur Verwaltung von {@link InspectionStep}-Entitäten. Bietet
@@ -68,12 +69,10 @@ public class InspectionStepService {
      * Ruft einen einzelnen InspectionStep anhand seiner ID ab.
      *
      * @param id die ID des gesuchten Schritts
-     * @return der gefundene {@link InspectionStep}
-     * @throws IllegalArgumentException wenn kein Schritt mit der ID existiert
+     * @return ein Optional mit dem gefundenen {@link InspectionStep}, oder leer wenn nicht existiert
      */
-    public InspectionStep getStepById(Long id) {
-        return inspectionStepRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("InspectionStep with id " + id + " not found"));
+    public Optional<InspectionStep> getStepById(Long id) {
+        return inspectionStepRepository.findById(id);
     }
 
     /**
@@ -126,7 +125,8 @@ public class InspectionStepService {
     public InspectionStep updateStep(Long id, InspectionStep updated) {
         log.info("Updating inspection step with id {}", id);
 
-        InspectionStep existing = getStepById(id);
+        InspectionStep existing = getStepById(id)
+                .orElseThrow(() -> new IllegalArgumentException("InspectionStep with id " + id + " not found"));
 
         existing.setStatus(updated.getStatus());
         existing.setComment(updated.getComment());
@@ -150,7 +150,8 @@ public class InspectionStepService {
     public InspectionStep updateStatus(Long id, StepStatus newStatus) {
         log.info("Updating status of inspection step with id {}", id);
 
-        InspectionStep existing = getStepById(id);
+        InspectionStep existing = getStepById(id)
+                .orElseThrow(() -> new IllegalArgumentException("InspectionStep with id " + id + " not found"));
         existing.setStatus(newStatus);
 
         InspectionStep saved = inspectionStepRepository.save(existing);
@@ -171,7 +172,8 @@ public class InspectionStepService {
     public InspectionStep updateComment(Long id, String newComment) {
         log.info("Updating comment of inspection step with id {}", id);
 
-        InspectionStep existing = getStepById(id);
+        InspectionStep existing = getStepById(id)
+                .orElseThrow(() -> new IllegalArgumentException("InspectionStep with id " + id + " not found"));
         existing.setComment(newComment);
 
         InspectionStep saved = inspectionStepRepository.save(existing);

@@ -3,9 +3,11 @@ package de.dhbw.webenginspection.controller;
 import de.dhbw.webenginspection.entity.InspectionStep;
 import de.dhbw.webenginspection.entity.StepStatus;
 import de.dhbw.webenginspection.service.InspectionStepService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ import java.util.List;
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
 public class InspectionStepController {
+
+    private static final Logger log = LoggerFactory.getLogger(InspectionStepController.class);
 
     private final InspectionStepService inspectionStepService;
 
@@ -34,6 +38,7 @@ public class InspectionStepController {
     @GetMapping("/inspections/{inspectionId}/steps")
     public List<InspectionStep> getStepsForInspection(@PathVariable
     Long inspectionId) {
+        log.info("Fetching all steps for inspection with id {}", inspectionId);
         return inspectionStepService.getStepsForInspection(inspectionId);
     }
 
@@ -51,13 +56,14 @@ public class InspectionStepController {
     public ResponseEntity<List<InspectionStep>> getStepsForInspectionByStatus(@PathVariable
     Long inspectionId, @PathVariable
     String status) {
-
+        log.info("Fetching steps for inspection {} with status {}", inspectionId, status);
+        
         try {
-            StepStatus stepStatus = StepStatus.valueOf(status);
+            StepStatus stepStatus = StepStatus.valueOf(status.toUpperCase());
             List<InspectionStep> steps = inspectionStepService.getStepsForInspectionByStatus(inspectionId, stepStatus);
             return ResponseEntity.ok(steps);
         } catch (IllegalArgumentException e) {
-            // z. B. wenn status kein gültiger Enum-Wert ist
+            log.error("Invalid status value: {}", status);
             return ResponseEntity.badRequest().build();
         }
     }
@@ -65,129 +71,75 @@ public class InspectionStepController {
     /**
      * Gibt einen einzelnen InspectionStep anhand seiner ID zurück.
      *
-     * @param id die ID des gesuchten Schritts
-     * @return {@code 200 OK} mit dem Schritt oder {@code 404 Not Found}, wenn
-     * kein Schritt mit der ID existiert
+     * @param stepId die ID des Steps
+     * @return {@code 200 OK} mit dem Step oder {@code 404 Not Found}
      */
-    @GetMapping("/inspection-steps/{id}")
-    public ResponseEntity<InspectionStep> getStepById(@PathVariable
-    Long id) {
-        try {
-            InspectionStep step = inspectionStepService.getStepById(id);
-            return ResponseEntity.ok(step);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/inspection-steps/{stepId}")
+    public ResponseEntity<InspectionStep> getStepById(@PathVariable Long stepId) {
+        log.info("Fetching inspection step with id {}", stepId);
+        return inspectionStepService.getStepById(stepId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Erstellt einen neuen Schritt für eine bestehende Inspection. Der Schritt
-     * wird sowohl mit der Inspection als auch mit dem zugrunde liegenden
-     * ChecklistStep verknüpft.
+     * Aktualisiert den Status eines InspectionStep.
      *
-     * @param inspectionId die ID der Inspection, zu der der Schritt gehört
-     * @param checklistStepId die ID des zugrunde liegenden ChecklistSteps
-     * @param stepData die Daten für den neuen {@link InspectionStep}
-     * @return {@code 201 Created} mit dem erstellten Schritt oder
-     * {@code 404 Not Found}, wenn Inspection oder ChecklistStep nicht
-     * existieren
-     */
-    @PostMapping("/inspections/{inspectionId}/steps")
-    public ResponseEntity<InspectionStep> createStep(@PathVariable
-    Long inspectionId, @RequestParam
-    Long checklistStepId, @RequestBody
-    InspectionStep stepData) {
-
-        try {
-            InspectionStep created = inspectionStepService.createStep(inspectionId, checklistStepId, stepData);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (IllegalArgumentException e) {
-            // Inspection oder ChecklistStep nicht gefunden / fachlicher Fehler
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
-     * Aktualisiert einen bestehenden InspectionStep vollständig. Verändert
-     * Status, Kommentar und photoPath.
-     *
-     * @param id die ID des zu aktualisierenden Schritts
-     * @param updated ein Objekt mit den neuen Werten
-     * @return {@code 200 OK} mit dem aktualisierten Schritt oder
-     * {@code 404 Not Found}, wenn der Schritt nicht existiert
-     */
-    @PutMapping("/inspection-steps/{id}")
-    public ResponseEntity<InspectionStep> updateStep(@PathVariable
-    Long id, @RequestBody
-    InspectionStep updated) {
-
-        try {
-            InspectionStep saved = inspectionStepService.updateStep(id, updated);
-            return ResponseEntity.ok(saved);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
-     * Aktualisiert nur den Status eines bestehenden InspectionStep. Der Status
-     * muss einem gültigen {@link StepStatus}-Enum-Wert entsprechen.
-     *
-     * @param id die ID des zu aktualisierenden Schritts
+     * @param stepId die ID des Steps
      * @param newStatus der neue Status als String
-     * @return {@code 200 OK} mit dem aktualisierten Schritt oder
-     * {@code 400 Bad Request}, wenn der Status ungültig ist
+     * @return {@code 200 OK} mit dem aktualisierten Step,
+     * {@code 400 Bad Request}, wenn der Status ungültig ist, oder
+     * {@code 404 Not Found}, wenn der Step nicht existiert
      */
-    @PatchMapping("/inspection-steps/{id}/status")
-    public ResponseEntity<InspectionStep> updateStatus(@PathVariable
-    Long id, @RequestBody
-    String newStatus) {
-
+    @PatchMapping("/inspection-steps/{stepId}/status")
+    public ResponseEntity<InspectionStep> updateStatus(@PathVariable Long stepId, @RequestBody String newStatus) {
+        log.info("Updating status of step {} to {}", stepId, newStatus);
+        
         try {
-            StepStatus status = StepStatus.valueOf(newStatus.trim());
-            InspectionStep updated = inspectionStepService.updateStatus(id, status);
+            StepStatus stepStatus = StepStatus.valueOf(newStatus.toUpperCase());
+            InspectionStep updated = inspectionStepService.updateStatus(stepId, stepStatus);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
-            // entweder Step nicht gefunden oder ungültiger Status
+            log.error("Error updating step status: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
 
     /**
-     * Aktualisiert ausschließlich den Kommentar eines bestehenden Schritts.
+     * Aktualisiert den Kommentar eines InspectionStep.
      *
-     * @param id die ID des zu aktualisierenden Schritts
-     * @param newComment der neue Kommentartext
-     * @return {@code 200 OK} mit dem aktualisierten Schritt oder
-     * {@code 404 Not Found}, wenn der Schritt nicht existiert
+     * @param stepId die ID des Steps
+     * @param newComment der neue Kommentar
+     * @return {@code 200 OK} mit dem aktualisierten Step oder
+     * {@code 404 Not Found}, wenn der Step nicht existiert
      */
-    @PatchMapping("/inspection-steps/{id}/comment")
-    public ResponseEntity<InspectionStep> updateComment(@PathVariable
-    Long id, @RequestBody
-    String newComment) {
-
+    @PatchMapping("/inspection-steps/{stepId}/comment")
+    public ResponseEntity<InspectionStep> updateComment(@PathVariable Long stepId, @RequestBody String newComment) {
+        log.info("Updating comment of step {}", stepId);
         try {
-            InspectionStep updated = inspectionStepService.updateComment(id, newComment);
+            InspectionStep updated = inspectionStepService.updateComment(stepId, newComment);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
+            log.error("Error updating step comment: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
     /**
-     * Löscht einen bestehenden InspectionStep anhand seiner ID.
+     * Löscht einen InspectionStep.
      *
-     * @param id die ID des zu löschenden Schritts
-     * @return {@code 204 No Content} bei Erfolg oder {@code 404 Not Found},
-     * wenn kein Schritt mit der ID existiert
+     * @param stepId die ID des Steps
+     * @return {@code 204 No Content} bei erfolgreicher Löschung oder
+     * {@code 404 Not Found}, wenn der Step nicht existiert
      */
-    @DeleteMapping("/inspection-steps/{id}")
-    public ResponseEntity<Void> deleteStep(@PathVariable
-    Long id) {
+    @DeleteMapping("/inspection-steps/{stepId}")
+    public ResponseEntity<Void> deleteStep(@PathVariable Long stepId) {
+        log.info("Deleting inspection step with id {}", stepId);
         try {
-            inspectionStepService.deleteStep(id);
+            inspectionStepService.deleteStep(stepId);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
+            log.error("Error deleting step: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

@@ -6,6 +6,8 @@ import de.dhbw.webenginspection.service.InspectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173") // für React-Frontend
 public class InspectionController {
 
+    private static final Logger log = LoggerFactory.getLogger(InspectionController.class);
+
     private final InspectionService inspectionService;
 
     public InspectionController(InspectionService inspectionService) {
@@ -33,6 +37,7 @@ public class InspectionController {
      */
     @GetMapping
     public List<Inspection> getAll() {
+        log.info("Fetching all inspections");
         return inspectionService.getAllInspections();
     }
 
@@ -44,14 +49,11 @@ public class InspectionController {
      * falls keine Inspection mit der angegebenen ID existiert
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Inspection> getById(@PathVariable
-    Long id) {
-        try {
-            Inspection inspection = inspectionService.getInspectionById(id);
-            return ResponseEntity.ok(inspection);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Inspection> getById(@PathVariable Long id) {
+        log.info("Fetching inspection with id {}", id);
+        return inspectionService.getInspectionById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -65,8 +67,8 @@ public class InspectionController {
      * {@code null})
      */
     @GetMapping("/by-user/{userId}")
-    public ResponseEntity<List<Inspection>> getByUser(@PathVariable
-    Long userId) {
+    public ResponseEntity<List<Inspection>> getByUser(@PathVariable Long userId) {
+        log.info("Fetching inspections for user with id {}", userId);
         List<Inspection> inspections = inspectionService.getInspectionsForUser(userId);
         return ResponseEntity.ok(inspections);
     }
@@ -82,13 +84,13 @@ public class InspectionController {
      * {@code 400 Bad Request}, wenn die referenzierte Checklist nicht existiert
      */
     @PostMapping
-    public ResponseEntity<Inspection> create(@Valid
-    @RequestBody
-    InspectionCreateRequest request) {
+    public ResponseEntity<Inspection> create(@Valid @RequestBody InspectionCreateRequest request) {
+        log.info("Creating inspection for checklist {}", request.getChecklistId());
         try {
             Inspection created = inspectionService.createInspectionFromChecklist(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
+            log.error("Error creating inspection: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -99,17 +101,18 @@ public class InspectionController {
      * @param id die ID der zu aktualisierenden Inspection
      * @param newStatus der neue Statuswert als String
      * @return {@code 200 OK} mit der aktualisierten {@link Inspection} oder
+     * {@code 400 Bad Request}, wenn der Status ungültig ist, oder
      * {@code 404 Not Found}, wenn keine Inspection mit der ID existiert
      */
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Inspection> updateStatus(@PathVariable
-    Long id, @RequestBody
-    String newStatus) {
+    public ResponseEntity<Inspection> updateStatus(@PathVariable Long id, @RequestBody String newStatus) {
+        log.info("Updating status of inspection with id {} to {}", id, newStatus);
         try {
             Inspection updated = inspectionService.updateStatus(id, newStatus);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            log.error("Error updating inspection status: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -121,12 +124,13 @@ public class InspectionController {
      * {@code 404 Not Found}, wenn keine Inspection mit der ID existiert
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable
-    Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        log.info("Deleting inspection with id {}", id);
         try {
             inspectionService.deleteInspection(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
+            log.error("Error deleting inspection: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

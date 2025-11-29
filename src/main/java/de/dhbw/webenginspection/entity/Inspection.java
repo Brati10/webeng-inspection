@@ -28,7 +28,7 @@ public class Inspection {
     private String plantName;
 
     /**
-     * Status der Inspektion (geplant / in Bearbeitung / abgeschlossen).
+     * Status der Inspektion (geplant / in Bearbeitung / abgeschlossen)
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

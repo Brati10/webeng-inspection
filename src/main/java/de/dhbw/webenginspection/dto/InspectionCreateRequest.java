@@ -4,13 +4,11 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 import de.dhbw.webenginspection.controller.GlobalExceptionHandler;
-import de.dhbw.webenginspection.entity.Checklist;
 
 /**
  * Data Transfer Object zum Erstellen einer neuen {@link Inspection}. Enthält
  * alle notwendigen Felder, die vom Client (z. B. dem React-Frontend)
- * bereitgestellt werden müssen, einschließlich der Referenz zur zugehörigen
- * {@link Checklist}.
+ * bereitgestellt werden müssen.
  *
  * Die Validierungsannotationen stellen sicher, dass bei fehlerhaften Eingaben
  * der {@link GlobalExceptionHandler} automatisch passende Fehlermeldungen
@@ -42,11 +40,10 @@ public class InspectionCreateRequest {
     private String plantName;
 
     /**
-     * Zeitpunkt der geplanten Inspection. Wird als {@link LocalDateTime}
-     * erwartet; muss ein gültiges Datum/Zeit-Format haben.
+     * Geplanter Zeitpunkt der Inspection.
      */
-    @NotNull(message = "inspectionDate is required")
-    private LocalDateTime inspectionDate;
+    @NotNull(message = "plannedDate is required")
+    private LocalDateTime plannedDate;
 
     /**
      * Optionaler allgemeiner Kommentar zur Inspection. Wird z. B. für
@@ -56,11 +53,10 @@ public class InspectionCreateRequest {
     private String generalComment;
 
     /**
-     * ID des verantwortlichen Users, der die Inspection durchführen soll.
+     * ID des verantwortlichen Inspektors, der die Inspection durchführen soll.
      */
-    // KEIN @NotNull, damit Tests erstmal weiter funktionieren; später evtl.
-    // verpflichtend
-    private Long responsibleUserId;
+    @NotNull(message = "assignedInspectorId is required")
+    private Long assignedInspectorId;
 
     public InspectionCreateRequest() {
     }
@@ -89,12 +85,12 @@ public class InspectionCreateRequest {
         this.plantName = plantName;
     }
 
-    public LocalDateTime getInspectionDate() {
-        return inspectionDate;
+    public LocalDateTime getPlannedDate() {
+        return plannedDate;
     }
 
-    public void setInspectionDate(LocalDateTime inspectionDate) {
-        this.inspectionDate = inspectionDate;
+    public void setPlannedDate(LocalDateTime plannedDate) {
+        this.plannedDate = plannedDate;
     }
 
     public String getGeneralComment() {
@@ -105,11 +101,11 @@ public class InspectionCreateRequest {
         this.generalComment = generalComment;
     }
 
-    public Long getResponsibleUserId() {
-        return responsibleUserId;
+    public Long getAssignedInspectorId() {
+        return assignedInspectorId;
     }
 
-    public void setResponsibleUserId(Long responsibleUserId) {
-        this.responsibleUserId = responsibleUserId;
+    public void setAssignedInspectorId(Long assignedInspectorId) {
+        this.assignedInspectorId = assignedInspectorId;
     }
 }

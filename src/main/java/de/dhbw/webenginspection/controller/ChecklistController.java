@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 /**
@@ -15,10 +18,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/checklists")
-@CrossOrigin(origins = "http://localhost:5173") // später für dein
-                                                // React-Frontend (Vite
-                                                // default-Port)
+@CrossOrigin(origins = "http://localhost:5173")
 public class ChecklistController {
+
+    private static final Logger log = LoggerFactory.getLogger(ChecklistController.class);
 
     private final ChecklistService checklistService;
 
@@ -33,6 +36,7 @@ public class ChecklistController {
      */
     @GetMapping
     public List<Checklist> getAll() {
+        log.info("Fetching all checklists");
         return checklistService.getAllChecklists();
     }
 
@@ -44,14 +48,11 @@ public class ChecklistController {
      * falls keine Checklist mit der angegebenen ID existiert
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Checklist> getById(@PathVariable
-    Long id) {
-        try {
-            Checklist checklist = checklistService.getChecklistById(id);
-            return ResponseEntity.ok(checklist);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Checklist> getById(@PathVariable Long id) {
+        log.info("Fetching checklist with id {}", id);
+        return checklistService.getChecklistById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -61,8 +62,8 @@ public class ChecklistController {
      * @return {@code 201 Created} mit der gespeicherten Checklist
      */
     @PostMapping
-    public ResponseEntity<Checklist> create(@RequestBody
-    Checklist checklist) {
+    public ResponseEntity<Checklist> create(@RequestBody Checklist checklist) {
+        log.info("Creating new checklist '{}'", checklist.getName());
         Checklist created = checklistService.createChecklist(checklist);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -76,13 +77,13 @@ public class ChecklistController {
      * {@code 404 Not Found}, falls keine Checklist mit der ID existiert
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Checklist> update(@PathVariable
-    Long id, @RequestBody
-    Checklist checklist) {
+    public ResponseEntity<Checklist> update(@PathVariable Long id, @RequestBody Checklist checklist) {
+        log.info("Updating checklist with id {}", id);
         try {
             Checklist updated = checklistService.updateChecklist(id, checklist);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
+            log.error("Error updating checklist: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
@@ -95,12 +96,13 @@ public class ChecklistController {
      * {@code 404 Not Found}, wenn keine entsprechende Checklist existiert
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable
-    Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        log.info("Deleting checklist with id {}", id);
         try {
             checklistService.deleteChecklist(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
+            log.error("Error deleting checklist: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

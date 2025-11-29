@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service zur Verwaltung von {@link Inspection}-Entitäten. Bietet Funktionen
@@ -46,7 +46,13 @@ public class InspectionService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Gibt alle vorhandenen Inspektionen zurück.
+     *
+     * @return eine Liste aller {@link Inspection}-Entitäten (niemals {@code null})
+     */
     public List<Inspection> getAllInspections() {
+        log.info("Fetching all inspections");
         return inspectionRepository.findAll();
     }
 
@@ -54,13 +60,12 @@ public class InspectionService {
      * Gibt die Inspection mit der angegebenen ID zurück.
      *
      * @param id die eindeutige ID der gesuchten Inspection
-     * @return die gefundene {@link Inspection}
-     * @throws IllegalArgumentException wenn keine Inspection mit der ID
-     * existiert
+     * @return ein Optional mit der gefundenen {@link Inspection}, oder leer wenn nicht existiert
      */
-    public Inspection getInspectionById(Long id) {
-        return inspectionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Inspection with id " + id + " not found"));
+    @Transactional(readOnly = true)
+    public Optional<Inspection> getInspectionById(Long id) {
+        log.info("Fetching inspection with id {}", id);
+        return inspectionRepository.findById(id);
     }
 
     /**
@@ -75,32 +80,28 @@ public class InspectionService {
      * @param request Daten zur Erstellung der Inspection, einschließlich der ID
      * der zugrunde liegenden Checklist
      * @return die erstellte und gespeicherte {@link Inspection}
-     * @throws IllegalArgumentException wenn keine Checklist mit der angegebenen
-     * ID existiert
+     * @throws IllegalArgumentException wenn keine Checklist oder kein User mit den angegebenen
+     * IDs existiert
      */
     public Inspection createInspectionFromChecklist(InspectionCreateRequest request) {
         log.info("Creating inspection for checklist {} at plant '{}'", request.getChecklistId(),
                 request.getPlantName());
+        
         Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(
                 () -> new IllegalArgumentException("Checklist with id " + request.getChecklistId() + " not found"));
 
+        // User laden (jetzt Pflichtfeld)
+        User assignedInspector = userRepository.findById(request.getAssignedInspectorId()).orElseThrow(
+                () -> new IllegalArgumentException("User with id " + request.getAssignedInspectorId() + " not found"));
+
         Inspection inspection = new Inspection();
         inspection.setChecklist(checklist);
-
         inspection.setTitle(request.getTitle() != null ? request.getTitle() : checklist.getName());
         inspection.setPlantName(request.getPlantName() != null ? request.getPlantName() : checklist.getPlantName());
-        inspection.setPlannedDate(
-                request.getInspectionDate() != null ? request.getInspectionDate() : LocalDateTime.now());
+        inspection.setPlannedDate(request.getPlannedDate());
         inspection.setStatus(InspectionStatus.PLANNED);
         inspection.setGeneralComment(request.getGeneralComment());
-
-        Long responsibleUserId = request.getResponsibleUserId();
-        if (responsibleUserId != null) {
-            User responsibleUser = userRepository.findById(responsibleUserId).orElseThrow(
-                    () -> new IllegalArgumentException("User with id " + responsibleUserId + " not found"));
-
-            inspection.setAssignedInspector(responsibleUser);
-        }
+        inspection.setAssignedInspector(assignedInspector);
 
         // Steps aus der Checklist kopieren
         if (checklist.getSteps() != null) {
@@ -111,8 +112,7 @@ public class InspectionService {
                 inspectionStep.setComment(null);
                 inspectionStep.setPhotoPath(null);
 
-                inspection.addStep(inspectionStep); // setzt auch inspection im
-                                                    // Step
+                inspection.addStep(inspectionStep); // setzt auch inspection im Step
             }
         }
 
@@ -126,8 +126,7 @@ public class InspectionService {
      * Liefert alle Inspektionen, die einem bestimmten Benutzer zugeordnet sind.
      *
      * @param userId ID des verantwortlichen Users
-     * @return Liste der Inspektionen des Users (ggf. leer, aber niemals
-     * {@code null})
+     * @return Liste der Inspektionen des Users (ggf. leer, aber niemals {@code null})
      */
     @Transactional(readOnly = true)
     public List<Inspection> getInspectionsForUser(Long userId) {
@@ -139,16 +138,25 @@ public class InspectionService {
      * Aktualisiert den Status einer bestehenden Inspection.
      *
      * @param id die ID der zu aktualisierenden Inspection
-     * @param newStatus der neue Statuswert
+     * @param newStatus der neue Statuswert als String
      * @return die aktualisierte {@link Inspection}
-     * @throws IllegalArgumentException wenn keine Inspection mit der ID
-     * existiert
+     * @throws IllegalArgumentException wenn keine Inspection mit der ID existiert oder
+     * der Status ungültig ist
      */
     public Inspection updateStatus(Long id, String newStatus) {
         log.info("Updating status of inspection with id {} to {}", id, newStatus);
 
-        Inspection inspection = getInspectionById(id);
-        inspection.setStatus(newStatus);
+        Inspection inspection = getInspectionById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Inspection with id " + id + " not found"));
+        
+        try {
+            InspectionStatus status = InspectionStatus.valueOf(newStatus.toUpperCase());
+            inspection.setStatus(status);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid status value: {}", newStatus);
+            throw new IllegalArgumentException("Invalid status: " + newStatus + ". Allowed values: " + 
+                java.util.Arrays.toString(InspectionStatus.values()));
+        }
 
         Inspection saved = inspectionRepository.save(inspection);
         log.info("Updated status of inspection with id {} to {}", saved.getId(), newStatus);
@@ -160,8 +168,7 @@ public class InspectionService {
      * Löscht die Inspection mit der angegebenen ID.
      *
      * @param id die ID der zu löschenden Inspection
-     * @throws IllegalArgumentException wenn keine Inspection mit der ID
-     * existiert
+     * @throws IllegalArgumentException wenn keine Inspection mit der ID existiert
      */
     public void deleteInspection(Long id) {
         log.info("Deleting inspection with id {}", id);

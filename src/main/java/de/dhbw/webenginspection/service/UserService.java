@@ -1,6 +1,7 @@
 package de.dhbw.webenginspection.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,13 @@ public class UserService {
 
     /**
      * Legt einen neuen Benutzer mit gehashtem Passwort an.
+     *
+     * @param username eindeutiger Benutzername
+     * @param displayName Anzeigename des Benutzers
+     * @param rawPassword unverschlüsseltes Passwort (wird gehashed)
+     * @param role {@link UserRole} des Benutzers
+     * @return der neu erstellte {@link User}
+     * @throws IllegalArgumentException wenn der Username bereits vergeben ist
      */
     public User createUser(String username, String displayName, String rawPassword, UserRole role) {
         log.info("Creating new user with username {}", username);
@@ -43,60 +51,86 @@ public class UserService {
         String passwordHash = passwordEncoder.encode(rawPassword);
 
         User user = new User(username, displayName, passwordHash, role);
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        log.info("Created user with id {}", saved.getId());
+        
+        return saved;
     }
 
     /**
      * Liefert alle Benutzer zurück.
+     *
+     * @return eine Liste aller {@link User}-Entitäten (niemals {@code null})
      */
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
+        log.info("Fetching all users");
         return userRepository.findAll();
     }
 
     /**
-     * Sucht einen Benutzer anhand des Usernamens.
-     */
-    @Transactional(readOnly = true)
-    public User getByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User with username " + username + " not found"));
-    }
-
-    /**
      * Sucht einen Benutzer anhand der ID.
+     *
+     * @param id die eindeutige Benutzer-ID
+     * @return ein Optional mit dem gefundenen {@link User}, oder leer wenn nicht existiert
      */
     @Transactional(readOnly = true)
-    public User getById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + id + " not found"));
+    public Optional<User> getUserById(Long id) {
+        log.info("Fetching user with id {}", id);
+        return userRepository.findById(id);
     }
 
     /**
-     * Hilfsmethode, um entweder per Username oder per ID zu laden.
+     * Sucht einen Benutzer anhand des Usernamens.
+     *
+     * @param username der eindeutige Benutzername
+     * @return ein Optional mit dem gefundenen {@link User}, oder leer wenn nicht existiert
      */
     @Transactional(readOnly = true)
-    public User getByUsernameOrId(String username, Long id) {
-        if (username != null) {
-            return getByUsername(username);
-        }
-        if (id != null) {
-            return getById(id);
-        }
-        throw new IllegalArgumentException("Either username or id must be provided");
+    public Optional<User> getUserByUsername(String username) {
+        log.info("Fetching user with username {}", username);
+        return userRepository.findByUsername(username);
     }
 
     /**
      * Prüft, ob Benutzername/Passwort-Kombination gültig ist.
+     *
+     * @param username der Benutzername
+     * @param rawPassword das unverschlüsselte Passwort
+     * @return der authentifizierte {@link User}
+     * @throws IllegalArgumentException wenn Username oder Passwort ungültig sind
      */
     @Transactional(readOnly = true)
     public User validateLogin(String username, String rawPassword) {
-        User user = getByUsername(username);
+        log.info("Validating login for user {}", username);
+        
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            log.warn("Invalid password attempt for user {}", username);
             throw new IllegalArgumentException("Invalid username or password");
         }
 
+        log.info("Login successful for user {}", username);
         return user;
+    }
+
+    /**
+     * Löscht einen Benutzer anhand seiner ID.
+     *
+     * @param id die ID des zu löschenden Benutzers
+     * @throws IllegalArgumentException wenn kein Benutzer mit der ID existiert
+     */
+    public void deleteUser(Long id) {
+        log.info("Deleting user with id {}", id);
+
+        if (!userRepository.existsById(id)) {
+            log.warn("User with id {} not found for deletion", id);
+            throw new IllegalArgumentException("User with id " + id + " not found");
+        }
+
+        userRepository.deleteById(id);
+        log.info("Deleted user with id {}", id);
     }
 }
