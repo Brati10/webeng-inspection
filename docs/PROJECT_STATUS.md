@@ -1,6 +1,6 @@
 # Projektstatus – webeng-inspection
 
-> Stand: bitte bei Änderung von dir aktualisieren
+> Stand: 01.12.2025 – automatisch überprüft
 
 ## 1. Backend – Spring Boot
 
@@ -8,100 +8,101 @@
 
 - [x] Spring-Boot-Projekt angelegt (Gradle, Java)
 - [x] Anwendung startet ohne Fehler
-- [x] Package-Struktur festgelegt (`controller`, `service`, `repository`, `entity`, `dto`)
+- [x] Package-Struktur festgelegt (controller, service, repository, entity, dto)
 
 ### 1.2 Domänenmodell & Persistenz
 
-- [x] Entity `Checklist` angelegt
-- [x] Entity `Inspection` angelegt
-- [x] Entity `ChecklistStep` angelegt
-- [x] Entity `InspectionStep` angelegt
-- [x] Enum `StepStatus` angelegt
-- [x] Relationen `Checklist` ↔ `Inspection` modelliert
-- [x] Relationen `Checklist` ↔ `ChecklistStep` modelliert
-- [x] Relationen `Inspection` ↔ `InspectionStep` modelliert
-- [x] Relation `InspectionStep` ↔ `ChecklistStep` modelliert
-- [x] JPA-Repositories für `Checklist`, `Inspection`, `ChecklistStep`, `InspectionStep` angelegt
+- [x] Entity Checklist angelegt
+- [x] Entity Inspection angelegt
+- [x] Entity ChecklistStep angelegt
+- [x] Entity InspectionStep angelegt
+- [x] Enum StepStatus angelegt (mit Werten: PASSED, FAILED, NOT_APPLICABLE)
+- [x] Relationen Checklist - Inspection modelliert
+- [x] Relationen Checklist - ChecklistStep modelliert
+- [x] Relationen Inspection - InspectionStep modelliert
+- [x] Relation InspectionStep - ChecklistStep modelliert
+- [x] JPA-Repositories für Checklist, Inspection, ChecklistStep, InspectionStep angelegt
 
 ### 1.3 Use-Case: Checklist
 
-- [x] `ChecklistService` implementiert
-- [x] `ChecklistController` implementiert
+- [x] ChecklistService implementiert
+- [x] ChecklistController implementiert
 - [x] Basis-CRUD-Endpunkte für Checklists vorhanden:
-  - `GET /api/checklists`
-  - `GET /api/checklists/{id}`
-  - `POST /api/checklists`
-  - `PUT /api/checklists/{id}`
-  - `DELETE /api/checklists/{id}`
+  - GET /api/checklists
+  - GET /api/checklists/{id}
+  - POST /api/checklists
+  - PUT /api/checklists/{id}
+  - DELETE /api/checklists/{id}
 - [x] Logik zum Aktualisieren der Steps innerhalb einer Checklist im Service implementiert
 
 ### 1.4 Use-Case: Inspection
 
-- [x] DTO `InspectionCreateRequest` angelegt
-- [x] `InspectionService` implementiert
-- [x] `InspectionController` implementiert
+- [x] DTO InspectionCreateRequest angelegt
+- [x] InspectionService implementiert
+- [x] InspectionController implementiert
 - [x] Endpunkte für Inspections vorhanden:
-  - `GET /api/inspections`
-  - `GET /api/inspections/{id}`
-  - `POST /api/inspections` (Erzeugen inkl. zugehöriger `InspectionStep`s aus `ChecklistStep`s)
-  - `DELETE /api/inspections/{id}`
-  - `PATCH /api/inspections/{id}/status` (Status-Update)
-- [x] Automatisches Anlegen der `InspectionStep`s beim Erzeugen einer Inspection umgesetzt
-- [ ] Feld „verantwortlicher Mitarbeiter“ in `Inspection` modelliert (z. B. Relation auf `User`)
-- [ ] Felder für geplantes / tatsächliches Datum (z. B. `plannedDate`, `startedAt`, `finishedAt`)
-- [ ] Status-Werte decken die Anforderungen ab (`GEPLANT` / `IN_BEARBEITUNG` / `ABGESCHLOSSEN`)
+  - GET /api/inspections
+  - GET /api/inspections/{id}
+  - GET /api/inspections/by-user/{userId} (NEU: Inspections pro User)
+  - POST /api/inspections (Erzeugen inkl. zugehöriger InspectionSteps aus ChecklistSteps)
+  - DELETE /api/inspections/{id}
+  - PATCH /api/inspections/{id}/status (Status-Update)
+- [x] Automatisches Anlegen der InspectionSteps beim Erzeugen einer Inspection umgesetzt
+- [x] Feld verantwortlicher Mitarbeiter in Inspection modelliert (assignedInspector als Relation auf User)
+- [x] Felder für geplantes / tatsächliches Datum vorhanden (plannedDate, startedAt, finishedAt)
+- [x] Status-Werte decken die Anforderungen ab (PLANNED / IN_PROGRESS / COMPLETED via InspectionStatus-Enum)
 
 ### 1.5 Use-Case: Steps
 
 #### 1.5.1 ChecklistSteps (Vorlagen-Schritte)
 
-- [x] `ChecklistStepService` implementiert
-- [x] `ChecklistStepController` implementiert
-- [x] Endpunkte für ChecklistSteps (lesen/anlegen/ändern/löschen) vorhanden
+- [x] ChecklistStepService implementiert
+- [x] ChecklistStepController implementiert
+- [x] Endpunkte für ChecklistSteps (lesen/anlegen/aendern/loeschen) vorhanden
 - [x] ChecklistStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
 
 #### 1.5.2 InspectionSteps (konkrete Schritte einer Inspection)
 
-- [x] `InspectionStepService` implementiert
-- [x] `InspectionStepController` implementiert
-- [x] Endpunkte für InspectionSteps (lesen/anlegen/ändern/löschen, Status/Kommentar setzen) vorhanden
+- [x] InspectionStepService implementiert
+- [x] InspectionStepController implementiert
+- [x] Endpunkte für InspectionSteps (lesen/anlegen/aendern/loeschen, Status/Kommentar setzen) vorhanden
 - [x] InspectionStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
-- [ ] Step-Status deckt Werte „erfüllt / nicht erfüllt / n. a.“ ab (Mapping auf `StepStatus`-Enum)
-- [ ] Kommentarfeld pro Step in der API nutzbar
-- [ ] Feld zum Hinterlegen eines Foto-Pfads oder Upload-Mechanismus (z. B. `photoPath`)
+- [x] Step-Status deckt Werte erfuellt / nicht erfuellt / n. a. ab (PASSED / FAILED / NOT_APPLICABLE via StepStatus-Enum)
+- [x] Kommentarfeld pro Step in der API nutzbar (comment-Feld in InspectionStep, Endpoint PATCH /inspection-steps/{id}/comment)
+- [x] Feld zum Hinterlegen eines Foto-Pfads vorhanden (photoPath-Feld in InspectionStep)
 
 ### 1.6 Querschnittsthemen Backend
 
-- [x] Globales Error-Handling mit `@ControllerAdvice`
+- [x] Globales Error-Handling mit @ControllerAdvice
 - [x] Einheitliches Fehler-Response-Format (z. B. Error-DTO)
-- [x] Bean Validation auf Request-Bodies (z. B. `@NotNull`, `@Size`, …)
+- [x] Bean Validation auf Request-Bodies (z. B. @NotNull, @Size)
 - [x] Sinnvolles Logging eingerichtet (z. B. in Services/Controllern)
 - [x] Basis-Tests mit MockMvc für Checklist
 - [x] Basis-Tests mit MockMvc für Inspection
 - [x] Basis-Tests mit MockMvc für Steps
 - [ ] (Optional) Swagger / OpenAPI-Doku
 
-### 1.7 Codequalität & Dokumentation
+### 1.7 Codequalitaet & Dokumentation
 
-- [x] JavaDoc für Services ergänzt (Checklist, Inspection, ChecklistStep, InspectionStep)
-- [x] JavaDoc für Controller ergänzt (Checklist, Inspection, ChecklistStep, InspectionStep)
-- [x] JavaDoc für Entities ergänzt (Checklist, Inspection, ChecklistStep, InspectionStep, StepStatus)
-- [x] JavaDoc für DTOs ergänzt (InspectionCreateRequest)
-- [x] JavaDoc für Fehlerklassen ergänzt (ErrorResponse, GlobalExceptionHandler)
+- [x] JavaDoc für Services ergaenzt (Checklist, Inspection, ChecklistStep, InspectionStep, UserService)
+- [x] JavaDoc für Controller ergaenzt (Checklist, Inspection, ChecklistStep, InspectionStep, AuthController)
+- [x] JavaDoc für Entities ergaenzt (Checklist, Inspection, ChecklistStep, InspectionStep, StepStatus, User, UserRole, InspectionStatus)
+- [x] JavaDoc für DTOs ergaenzt (InspectionCreateRequest, LoginRequest, UserResponse)
+- [x] JavaDoc für Fehlerklassen ergaenzt (ErrorResponse, GlobalExceptionHandler)
 
 ### 1.8 User & Authentifizierung
 
-- [x] Entity `User` angelegt (z. B. Felder: `id`, `username`, `passwordHash`, `displayName`, `role`)
-- [x] Enum `UserRole` angelegt (z. B. `ADMIN`, `INSPECTOR`)
-- [x] Relation `User` ↔ `Inspection` modelliert (z. B. `assignedInspector`)
-- [x] `UserRepository` angelegt
-- [ ] `UserService` implementiert (Verwaltung von Benutzern, Passwort-Hashing, Suche nach Username)
-- [ ] `AuthController` implementiert (z. B. `/api/auth/login`, `/api/auth/me`)
-- [ ] Spring Security Grundkonfiguration eingerichtet
-- [ ] Passwort-Hashing mit BCrypt konfiguriert
-- [ ] Login-Endpunkt implementiert (`/api/auth/login`, gibt Token oder Session-Info zurück)
-- [ ] Endpoint zum Laden der Inspektionen des eingeloggten Users (z. B. `GET /api/me/inspections`)
-- [ ] Security-Regeln definiert (z. B. nur eingeloggter User sieht seine Inspektionen, Admin sieht alle)
+- [x] Entity User angelegt (Felder: id, username, passwordHash, displayName, role)
+- [x] Enum UserRole angelegt (ADMIN, INSPECTOR)
+- [x] Relation User - Inspection modelliert (assignedInspector)
+- [x] UserRepository angelegt
+- [x] UserService implementiert (Verwaltung von Benutzern, Passwort-Hashing, Suche nach Username)
+- [x] AuthController implementiert (/api/auth/login, /api/auth/me)
+- [x] Spring Security Grundkonfiguration eingerichtet (SecurityConfig.java)
+- [x] Passwort-Hashing mit BCrypt konfiguriert
+- [x] Login-Endpunkt implementiert (/api/auth/login, gibt User-Daten zurueck)
+- [x] Endpoint zum Laden der Inspektionen des Users (GET /api/inspections/by-user/{userId})
+- [ ] Security-Regeln definiert (aktuell: alle Endpoints offen, echte Autorisierung noch ausstehend)
 
 ## 2. Frontend – React (Vite)
 
@@ -114,7 +115,7 @@
 ### 2.2 API-Anbindung
 
 - [x] API-Service-Layer zum Backend (Fetch/Axios)
-- [ ] Fehler- und Loading-Handling im API-Layer
+- [x] Fehler- und Loading-Handling im API-Layer (via Axios-Interceptor, console.error)
 - [x] Environment-/Config für Backend-URL
 
 ### 2.3 Views / Seiten
@@ -122,7 +123,7 @@
 - [x] Übersichtsliste für Checklists
 - [x] Detailansicht für eine Checklist inkl. Steps
 - [x] Detailansicht für eine Inspection inkl. Steps
-- [ ] Anzeige der zugehörigen Inspections bei einer Checklist
+- [ ] Anzeige der zugehoerigen Inspections bei einer Checklist
 - [ ] Formulare für Erstellen/Bearbeiten (mind. für einen Typ: Checklist oder Inspection oder Step)
 
 - [ ] Dashboard-Seite
@@ -133,9 +134,9 @@
   - [ ] Anzeige wichtiger Kennzahlen (z. B. Anzahl offener Inspektionen)
 
 - [ ] Ergebnisansicht / Berichtseite für eine Inspection
-  - [ ] Zusammenfassung der Ergebnisse (z. B. Anzahl erfüllter/nicht erfüllter/n. a. Steps)
+  - [ ] Zusammenfassung der Ergebnisse (z. B. Anzahl erfuellter/nicht erfuellter/n. a. Steps)
   - [ ] Anzeige aller Kommentare und Fotos
-  - [ ] Druckansicht / PDF-Export (z. B. über Browser-Print)
+  - [ ] Druckansicht / PDF-Export (z. B. ueber Browser-Print)
 
 ### 2.4 UX / Feinschliff
 
@@ -145,11 +146,11 @@
 
 ### 2.5 Authentifizierung & User-Flow (Frontend)
 
-- [ ] `authService` im Frontend (z. B. `login()`, `logout()`, `getCurrentUser()`)
+- [ ] authService im Frontend (z. B. login(), logout(), getCurrentUser())
 - [ ] Login-Seite (Formular für Benutzername/Passwort)
-- [ ] Speicherung der Auth-Info (z. B. Token) im `localStorage` oder `sessionStorage`
-- [ ] Globaler Auth-Context oder Hook (z. B. `AuthContext`, `useAuth()`)
-- [ ] Geschützte Routen (Redirect auf Login, wenn nicht eingeloggt)
+- [ ] Speicherung der Auth-Info (z. B. Token) im localStorage oder sessionStorage
+- [ ] Globaler Auth-Context oder Hook (z. B. AuthContext, useAuth())
+- [ ] Geschuetzte Routen (Redirect auf Login, wenn nicht eingeloggt)
 - [ ] Anzeige des eingeloggten Benutzers in der Navbar
 - [ ] Logout-Funktion (Button in der Navbar)
 
@@ -157,8 +158,8 @@
 
 ### 3.1 Grundstruktur
 
-- [x] Bruno-Collection für Backend angelegt (`api-tests/bruno/webeng-inspection`)
-- [x] Environment `local` mit Base-URL konfiguriert
+- [x] Bruno-Collection für Backend angelegt (api-tests/bruno/webeng-inspection)
+- [x] Environment local mit Base-URL konfiguriert
 
 ### 3.2 Checklist-Flow
 
@@ -168,8 +169,8 @@
   - Get checklist by id
   - Update checklist
   - Delete checklist
-- [x] Happy-Path getestet (z. B. „Checklist erstellen → abrufen → ändern → löschen“)
-- [ ] Negativfälle getestet (z. B. 404 bei unbekannter ID, Validierungsfehler)
+- [x] Happy-Path getestet (z. B. Checklist erstellen -> abrufen -> aendern -> loeschen)
+- [ ] Negativfaelle getestet (z. B. 404 bei unbekannter ID, Validierungsfehler)
 
 ### 3.3 Inspection-Flow
 
@@ -179,55 +180,55 @@
   - Get inspection by id
   - Update inspection status
   - Delete inspection
-- [x] Happy-Path getestet (Inspection zu existierender Checklist anlegen, abrufen, löschen)
-- [ ] Negativfälle getestet (Checklist nicht vorhanden, ungültige Daten)
+- [x] Happy-Path getestet (Inspection zu existierender Checklist anlegen, abrufen, loeschen)
+- [ ] Negativfaelle getestet (Checklist nicht vorhanden, ungueltige Daten)
 
 ### 3.4 Step-Flow
 
-- [ ] Requests für ChecklistStep-Endpunkte angelegt
-- [ ] Requests für InspectionStep-Endpunkte angelegt
-- [ ] Happy-Path getestet (Steps zu Checklist/Inspection anlegen, abrufen, ändern, löschen)
-- [ ] Negativfälle getestet
+- [x] Requests für ChecklistStep-Endpunkte angelegt
+- [x] Requests für InspectionStep-Endpunkte angelegt
+- [x] Happy-Path getestet (Steps zu Checklist/Inspection anlegen, abrufen, aendern, loeschen)
+- [ ] Negativfaelle getestet
 
 ### 3.5 End-to-End-Szenarien
 
-- [x] E2E: Checklist → Inspection → Steps komplett durchgespielt
+- [x] E2E: Checklist -> Inspection -> Steps komplett durchgespielt
 - [x] E2E-Szenario dokumentiert (kurze Beschreibung in Bruno oder README)
 
 ### 3.6 Auth-Flow
 
-- [ ] Requests für Auth-Endpunkte angelegt (z. B. `/api/auth/login`, `/api/auth/me`)
-- [ ] Happy-Path Login getestet (korrekte Logindaten → gültige Antwort)
-- [ ] Negativfälle getestet (falsche Logindaten, gesperrter User etc.)
-- [ ] (Optional) Requests für User-bezogene Endpoints (z. B. `/api/me/inspections`)
+- [x] Requests für Auth-Endpunkte angelegt (z. B. /api/auth/login)
+- [x] Happy-Path Login getestet (korrekte Logindaten -> gueltige Antwort)
+- [ ] Negativfaelle getestet (falsche Logindaten, gesperrter User etc.)
+- [x] Requests für User-bezogene Endpoints (z. B. /api/inspections/by-user/{userId})
 
 ## 4. Planung & Architektur
 
 ### 4.1 Struktur & Layer
 
-- [x] Package-Struktur definiert (`entity`, `repository`, `service`, `controller`, `dto`)
-- [x] Trennung von Domänenschicht (Entities/Services) und Web-Schicht (Controller)
-- [ ] Kurze Text-Doku zur Architektur (1–2 Absätze, z. B. in `docs/ARCHITECTURE.md`)
+- [x] Package-Struktur definiert (entity, repository, service, controller, dto)
+- [x] Trennung von Domaenenschicht (Entities/Services) und Web-Schicht (Controller)
+- [ ] Kurze Text-Doku zur Architektur (1-2 Absaetze, z. B. in docs/ARCHITECTURE.md)
 
 ### 4.2 Designentscheidungen dokumentieren
 
-- [ ] Entscheidung: Warum aktuell (noch) direkte Rückgabe von Entities (und wie ein DTO-Layer aussehen könnte)
-- [ ] Erklärung der wichtigsten Relationen (Checklist ↔ Inspection ↔ ChecklistStep/InspectionStep)
+- [ ] Entscheidung: Warum aktuell (noch) direkte Rueckgabe von Entities (und wie ein DTO-Layer aussehen koennte)
+- [ ] Erklaerung der wichtigsten Relationen (Checklist - Inspection - ChecklistStep/InspectionStep)
 - [ ] Entscheidung: Wie Authentifizierung umgesetzt wird (Spring Security, Token/Session, Rollenmodell)
-- [ ] Hinweis: Welche Endpoints geschützt sind und warum
+- [ ] Hinweis: Welche Endpoints geschuetzt sind und warum
 
 ## 5. Fehleranalyse & Bugs
 
 ### 5.1 Bug-Liste
 
-- [ ] Datei `docs/BUGS.md` angelegt
+- [ ] Datei docs/BUGS.md angelegt
 - [ ] Aktuell bekannte Bugs eingetragen (mit Repro-Schritten, erwartetes Verhalten, aktuelles Verhalten)
-- [ ] Für jeden Bug entschieden: „Fixen“ oder „bewusst offen lassen“
+- [ ] Für jeden Bug entschieden: Fixen oder bewusst offen lassen
 
 ### 5.2 Technische Schulden
 
-- [ ] Stellen markiert, an denen du „Quick & Dirty“-Lösungen verwendest (z. B. Kommentare `// TODO`)
-- [ ] Liste dieser Stellen zentral gesammelt (z. B. in `docs/TECH_DEBT.md`)
+- [ ] Stellen markiert, an denen du Quick and Dirty-Loesungen verwendest (z. B. Kommentare // TODO)
+- [ ] Liste dieser Stellen zentral gesammelt (z. B. in docs/TECH_DEBT.md)
 
 ## 6. Projektorga & Dokumentation
 
@@ -239,9 +240,41 @@
 - [ ] Hinweis: Wie das Frontend gestartet wird
 - [ ] Beschreibung: Wie man sich einloggt (Standard-User/Passwort, Rollen)
 
-### 6.2 Für die Prüfung
+### 6.2 Für die Pruefung
 
-- [ ] Kurze Anleitung „Wie prüfe ich das Projekt?“ (z. B. Schritte: Starten → Dashboard → Inspektion durchführen)
-- [ ] Liste der wichtigsten Endpoints mit kurzer Erklärung
-- [ ] Kurze Notiz, welche Teile besonders prüfungsrelevant sind (z. B. Relationen, Error-Handling, Validation, Auth)
+- [ ] Kurze Anleitung Wie pruefe ich das Projekt? (z. B. Schritte: Starten -> Dashboard -> Inspektion durchfuehren)
+- [ ] Liste der wichtigsten Endpoints mit kurzer Erklaerung
+- [ ] Kurze Notiz, welche Teile besonders pruefungsrelevant sind (z. B. Relationen, Error-Handling, Validation, Auth)
 - [ ] Hinweis, wie Auth / User-System im Zusammenspiel von Backend & Frontend funktioniert
+
+---
+
+## Zusammenfassung der Aenderungen (01.12.2025)
+
+### Neu als erledigt markiert:
+
+**Backend (1.4, 1.5, 1.8):**
+- Verantwortlicher Mitarbeiter in Inspection (assignedInspector)
+- Datum-Felder (plannedDate, startedAt, finishedAt)
+- InspectionStatus-Enum mit PLANNED, IN_PROGRESS, COMPLETED
+- StepStatus-Enum mit PASSED, FAILED, NOT_APPLICABLE
+- comment- und photoPath-Felder in InspectionStep
+- UserService komplett implementiert
+- AuthController mit Login und /me-Endpoint
+- Spring Security mit BCrypt konfiguriert
+- Endpoint /api/inspections/by-user/{userId}
+
+**API-Tests (3.4, 3.6):**
+- ChecklistStep- und InspectionStep-Requests vorhanden
+- Auth-Requests für Login vorhanden
+- User-Endpoints in Bruno vorhanden
+
+**Frontend (2.2):**
+- Fehler-Handling via Axios-Interceptor vorhanden
+
+### Noch offen (wichtigste Punkte):
+
+- Security-Regeln (aktuell alle Endpoints offen)
+- Frontend: Dashboard, Formulare, Auth-Flow
+- Dokumentation: README, ARCHITECTURE.md, BUGS.md
+- Negativfall-Tests in Bruno
