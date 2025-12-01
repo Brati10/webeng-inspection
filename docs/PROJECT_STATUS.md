@@ -58,16 +58,16 @@
 
 - [x] ChecklistStepService implementiert
 - [x] ChecklistStepController implementiert
-- [x] Endpunkte für ChecklistSteps (lesen/anlegen/aendern/loeschen) vorhanden
+- [x] Endpunkte für ChecklistSteps (lesen/anlegen/ändern/löschen) vorhanden
 - [x] ChecklistStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
 
 #### 1.5.2 InspectionSteps (konkrete Schritte einer Inspection)
 
 - [x] InspectionStepService implementiert
 - [x] InspectionStepController implementiert
-- [x] Endpunkte für InspectionSteps (lesen/anlegen/aendern/loeschen, Status/Kommentar setzen) vorhanden
+- [x] Endpunkte für InspectionSteps (lesen/anlegen/ändern/löschen, Status/Kommentar setzen) vorhanden
 - [x] InspectionStep-Endpunkte in Bruno angelegt und getestet (Happy Path)
-- [x] Step-Status deckt Werte erfuellt / nicht erfuellt / n. a. ab (PASSED / FAILED / NOT_APPLICABLE via StepStatus-Enum)
+- [x] Step-Status deckt Werte erfüllt / nicht erfüllt / n. a. ab (PASSED / FAILED / NOT_APPLICABLE via StepStatus-Enum)
 - [x] Kommentarfeld pro Step in der API nutzbar (comment-Feld in InspectionStep, Endpoint PATCH /inspection-steps/{id}/comment)
 - [x] Feld zum Hinterlegen eines Foto-Pfads vorhanden (photoPath-Feld in InspectionStep)
 
@@ -82,13 +82,13 @@
 - [x] Basis-Tests mit MockMvc für Steps
 - [ ] (Optional) Swagger / OpenAPI-Doku
 
-### 1.7 Codequalitaet & Dokumentation
+### 1.7 Codequalität & Dokumentation
 
-- [x] JavaDoc für Services ergaenzt (Checklist, Inspection, ChecklistStep, InspectionStep, UserService)
-- [x] JavaDoc für Controller ergaenzt (Checklist, Inspection, ChecklistStep, InspectionStep, AuthController)
-- [x] JavaDoc für Entities ergaenzt (Checklist, Inspection, ChecklistStep, InspectionStep, StepStatus, User, UserRole, InspectionStatus)
-- [x] JavaDoc für DTOs ergaenzt (InspectionCreateRequest, LoginRequest, UserResponse)
-- [x] JavaDoc für Fehlerklassen ergaenzt (ErrorResponse, GlobalExceptionHandler)
+- [x] JavaDoc für Services ergänzt (Checklist, Inspection, ChecklistStep, InspectionStep, UserService)
+- [x] JavaDoc für Controller ergänzt (Checklist, Inspection, ChecklistStep, InspectionStep, AuthController)
+- [x] JavaDoc für Entities ergänzt (Checklist, Inspection, ChecklistStep, InspectionStep, StepStatus, User, UserRole, InspectionStatus)
+- [x] JavaDoc für DTOs ergänzt (InspectionCreateRequest, LoginRequest, UserResponse)
+- [x] JavaDoc für Fehlerklassen ergänzt (ErrorResponse, GlobalExceptionHandler)
 
 ### 1.8 User & Authentifizierung
 
@@ -100,7 +100,7 @@
 - [x] AuthController implementiert (/api/auth/login, /api/auth/me)
 - [x] Spring Security Grundkonfiguration eingerichtet (SecurityConfig.java)
 - [x] Passwort-Hashing mit BCrypt konfiguriert
-- [x] Login-Endpunkt implementiert (/api/auth/login, gibt User-Daten zurueck)
+- [x] Login-Endpunkt implementiert (/api/auth/login, gibt User-Daten zurück)
 - [x] Endpoint zum Laden der Inspektionen des Users (GET /api/inspections/by-user/{userId})
 - [ ] Security-Regeln definiert (aktuell: alle Endpoints offen, echte Autorisierung noch ausstehend)
 
@@ -123,7 +123,7 @@
 - [x] Übersichtsliste für Checklists
 - [x] Detailansicht für eine Checklist inkl. Steps
 - [x] Detailansicht für eine Inspection inkl. Steps
-- [ ] Anzeige der zugehoerigen Inspections bei einer Checklist
+- [ ] Anzeige der zugehörigen Inspections bei einer Checklist
 - [ ] Formulare für Erstellen/Bearbeiten (mind. für einen Typ: Checklist oder Inspection oder Step)
 
 - [ ] Dashboard-Seite
@@ -134,9 +134,9 @@
   - [ ] Anzeige wichtiger Kennzahlen (z. B. Anzahl offener Inspektionen)
 
 - [ ] Ergebnisansicht / Berichtseite für eine Inspection
-  - [ ] Zusammenfassung der Ergebnisse (z. B. Anzahl erfuellter/nicht erfuellter/n. a. Steps)
+  - [ ] Zusammenfassung der Ergebnisse (z. B. Anzahl erfüllter/nicht erfüllter/n. a. Steps)
   - [ ] Anzeige aller Kommentare und Fotos
-  - [ ] Druckansicht / PDF-Export (z. B. ueber Browser-Print)
+  - [ ] Druckansicht / PDF-Export (z. B. über Browser-Print)
 
 ### 2.4 UX / Feinschliff
 
@@ -150,7 +150,7 @@
 - [ ] Login-Seite (Formular für Benutzername/Passwort)
 - [ ] Speicherung der Auth-Info (z. B. Token) im localStorage oder sessionStorage
 - [ ] Globaler Auth-Context oder Hook (z. B. AuthContext, useAuth())
-- [ ] Geschuetzte Routen (Redirect auf Login, wenn nicht eingeloggt)
+- [ ] Geschützte Routen (Redirect auf Login, wenn nicht eingeloggt)
 - [ ] Anzeige des eingeloggten Benutzers in der Navbar
 - [ ] Logout-Funktion (Button in der Navbar)
 
@@ -169,8 +169,8 @@
   - Get checklist by id
   - Update checklist
   - Delete checklist
-- [x] Happy-Path getestet (z. B. Checklist erstellen -> abrufen -> aendern -> loeschen)
-- [ ] Negativfaelle getestet (z. B. 404 bei unbekannter ID, Validierungsfehler)
+- [x] Happy-Path getestet (z. B. Checklist erstellen -> abrufen -> ändern -> löschen)
+- [ ] Negativfälle getestet (z. B. 404 bei unbekannter ID, Validierungsfehler)
 
 ### 3.3 Inspection-Flow
 
@@ -180,15 +180,15 @@
   - Get inspection by id
   - Update inspection status
   - Delete inspection
-- [x] Happy-Path getestet (Inspection zu existierender Checklist anlegen, abrufen, loeschen)
-- [ ] Negativfaelle getestet (Checklist nicht vorhanden, ungueltige Daten)
+- [x] Happy-Path getestet (Inspection zu existierender Checklist anlegen, abrufen, löschen)
+- [ ] Negativfälle getestet (Checklist nicht vorhanden, ungültige Daten)
 
 ### 3.4 Step-Flow
 
 - [x] Requests für ChecklistStep-Endpunkte angelegt
 - [x] Requests für InspectionStep-Endpunkte angelegt
-- [x] Happy-Path getestet (Steps zu Checklist/Inspection anlegen, abrufen, aendern, loeschen)
-- [ ] Negativfaelle getestet
+- [x] Happy-Path getestet (Steps zu Checklist/Inspection anlegen, abrufen, ändern, löschen)
+- [ ] Negativfälle getestet
 
 ### 3.5 End-to-End-Szenarien
 
@@ -198,8 +198,8 @@
 ### 3.6 Auth-Flow
 
 - [x] Requests für Auth-Endpunkte angelegt (z. B. /api/auth/login)
-- [x] Happy-Path Login getestet (korrekte Logindaten -> gueltige Antwort)
-- [ ] Negativfaelle getestet (falsche Logindaten, gesperrter User etc.)
+- [x] Happy-Path Login getestet (korrekte Logindaten -> gültige Antwort)
+- [ ] Negativfälle getestet (falsche Logindaten, gesperrter User etc.)
 - [x] Requests für User-bezogene Endpoints (z. B. /api/inspections/by-user/{userId})
 
 ## 4. Planung & Architektur
@@ -207,15 +207,15 @@
 ### 4.1 Struktur & Layer
 
 - [x] Package-Struktur definiert (entity, repository, service, controller, dto)
-- [x] Trennung von Domaenenschicht (Entities/Services) und Web-Schicht (Controller)
-- [ ] Kurze Text-Doku zur Architektur (1-2 Absaetze, z. B. in docs/ARCHITECTURE.md)
+- [x] Trennung von Domänenschicht (Entities/Services) und Web-Schicht (Controller)
+- [ ] Kurze Text-Doku zur Architektur (1-2 Absätze, z. B. in docs/ARCHITECTURE.md)
 
 ### 4.2 Designentscheidungen dokumentieren
 
-- [ ] Entscheidung: Warum aktuell (noch) direkte Rueckgabe von Entities (und wie ein DTO-Layer aussehen koennte)
-- [ ] Erklaerung der wichtigsten Relationen (Checklist - Inspection - ChecklistStep/InspectionStep)
+- [ ] Entscheidung: Warum aktuell (noch) direkte Rückgabe von Entities (und wie ein DTO-Layer aussehen könnte)
+- [ ] Erklärung der wichtigsten Relationen (Checklist - Inspection - ChecklistStep/InspectionStep)
 - [ ] Entscheidung: Wie Authentifizierung umgesetzt wird (Spring Security, Token/Session, Rollenmodell)
-- [ ] Hinweis: Welche Endpoints geschuetzt sind und warum
+- [ ] Hinweis: Welche Endpoints geschützt sind und warum
 
 ## 5. Fehleranalyse & Bugs
 
@@ -240,16 +240,16 @@
 - [ ] Hinweis: Wie das Frontend gestartet wird
 - [ ] Beschreibung: Wie man sich einloggt (Standard-User/Passwort, Rollen)
 
-### 6.2 Für die Pruefung
+### 6.2 Für die Prüfung
 
-- [ ] Kurze Anleitung Wie pruefe ich das Projekt? (z. B. Schritte: Starten -> Dashboard -> Inspektion durchfuehren)
-- [ ] Liste der wichtigsten Endpoints mit kurzer Erklaerung
-- [ ] Kurze Notiz, welche Teile besonders pruefungsrelevant sind (z. B. Relationen, Error-Handling, Validation, Auth)
+- [ ] Kurze Anleitung Wie prüfe ich das Projekt? (z. B. Schritte: Starten -> Dashboard -> Inspektion durchführen)
+- [ ] Liste der wichtigsten Endpoints mit kurzer Erklärung
+- [ ] Kurze Notiz, welche Teile besonders prüfungsrelevant sind (z. B. Relationen, Error-Handling, Validation, Auth)
 - [ ] Hinweis, wie Auth / User-System im Zusammenspiel von Backend & Frontend funktioniert
 
 ---
 
-## Zusammenfassung der Aenderungen (01.12.2025)
+## Zusammenfassung der Änderungen (01.12.2025)
 
 ### Neu als erledigt markiert:
 
