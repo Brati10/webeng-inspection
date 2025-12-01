@@ -4,6 +4,7 @@ import de.dhbw.webenginspection.entity.Checklist;
 import de.dhbw.webenginspection.service.ChecklistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
@@ -14,7 +15,6 @@ import java.util.List;
 /**
  * REST-Controller für die Verwaltung von {@link Checklist}-Entitäten. Bietet
  * Endpunkte zum Erstellen, Abrufen, Aktualisieren und Löschen von Checklisten.
- * Wird von einem React-Frontend (Standard-Port 5173) konsumiert.
  */
 @RestController
 @RequestMapping("/api/checklists")
@@ -30,54 +30,58 @@ public class ChecklistController {
     }
 
     /**
-     * Gibt alle vorhandenen Checklisten zurück.
+     * Gibt alle vorhandenen Checklisten zurück (authentifiziert).
      *
      * @return eine Liste aller {@link Checklist}-Entitäten
      */
     @GetMapping
+    @PreAuthorize("authenticated")
     public List<Checklist> getAll() {
         log.info("Fetching all checklists");
         return checklistService.getAllChecklists();
     }
 
     /**
-     * Gibt eine einzelne Checklist anhand ihrer ID zurück.
+     * Gibt eine einzelne Checklist anhand ihrer ID zurück (authentifiziert).
      *
      * @param id die ID der gewünschten Checklist
-     * @return {@code 200 OK} mit der Checklist oder {@code 404 Not Found},
-     * falls keine Checklist mit der angegebenen ID existiert
+     * @return {@code 200 OK} mit der Checklist oder {@code 404 Not Found}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Checklist> getById(@PathVariable Long id) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<Checklist> getById(@PathVariable
+    Long id) {
         log.info("Fetching checklist with id {}", id);
-        return checklistService.getChecklistById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return checklistService.getChecklistById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Erstellt eine neue Checklist.
+     * Erstellt eine neue Checklist (nur für Admins).
      *
      * @param checklist die Daten der zu erstellenden {@link Checklist}
      * @return {@code 201 Created} mit der gespeicherten Checklist
      */
     @PostMapping
-    public ResponseEntity<Checklist> create(@RequestBody Checklist checklist) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Checklist> create(@RequestBody
+    Checklist checklist) {
         log.info("Creating new checklist '{}'", checklist.getName());
         Checklist created = checklistService.createChecklist(checklist);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
-     * Aktualisiert eine bestehende Checklist.
+     * Aktualisiert eine bestehende Checklist (nur für Admins).
      *
      * @param id die ID der zu aktualisierenden Checklist
      * @param checklist die neuen Daten für die Checklist
-     * @return {@code 200 OK} mit der aktualisierten Checklist oder
-     * {@code 404 Not Found}, falls keine Checklist mit der ID existiert
+     * @return {@code 200 OK} mit der aktualisierten Checklist
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Checklist> update(@PathVariable Long id, @RequestBody Checklist checklist) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Checklist> update(@PathVariable
+    Long id, @RequestBody
+    Checklist checklist) {
         log.info("Updating checklist with id {}", id);
         try {
             Checklist updated = checklistService.updateChecklist(id, checklist);
@@ -89,14 +93,15 @@ public class ChecklistController {
     }
 
     /**
-     * Löscht eine Checklist anhand ihrer ID.
+     * Löscht eine Checklist anhand ihrer ID (nur für Admins).
      *
      * @param id die ID der zu löschenden Checklist
-     * @return {@code 204 No Content} bei erfolgreicher Löschung oder
-     * {@code 404 Not Found}, wenn keine entsprechende Checklist existiert
+     * @return {@code 204 No Content} bei erfolgreicher Löschung
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable
+    Long id) {
         log.info("Deleting checklist with id {}", id);
         try {
             checklistService.deleteChecklist(id);

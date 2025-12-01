@@ -4,6 +4,7 @@ import de.dhbw.webenginspection.entity.InspectionStep;
 import de.dhbw.webenginspection.entity.StepStatus;
 import de.dhbw.webenginspection.service.InspectionStepService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class InspectionStepController {
      * @return eine Liste aller zugehörigen {@link InspectionStep}-Entitäten
      */
     @GetMapping("/inspections/{inspectionId}/steps")
+    @PreAuthorize("authenticated")
     public List<InspectionStep> getStepsForInspection(@PathVariable
     Long inspectionId) {
         log.info("Fetching all steps for inspection with id {}", inspectionId);
@@ -53,11 +55,12 @@ public class InspectionStepController {
      * {@code 400 Bad Request}, wenn der Status ungültig ist
      */
     @GetMapping("/inspections/{inspectionId}/steps/status/{status}")
+    @PreAuthorize("authenticated")
     public ResponseEntity<List<InspectionStep>> getStepsForInspectionByStatus(@PathVariable
     Long inspectionId, @PathVariable
     String status) {
         log.info("Fetching steps for inspection {} with status {}", inspectionId, status);
-        
+
         try {
             StepStatus stepStatus = StepStatus.valueOf(status.toUpperCase());
             List<InspectionStep> steps = inspectionStepService.getStepsForInspectionByStatus(inspectionId, stepStatus);
@@ -75,10 +78,11 @@ public class InspectionStepController {
      * @return {@code 200 OK} mit dem Step oder {@code 404 Not Found}
      */
     @GetMapping("/inspection-steps/{stepId}")
-    public ResponseEntity<InspectionStep> getStepById(@PathVariable Long stepId) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<InspectionStep> getStepById(@PathVariable
+    Long stepId) {
         log.info("Fetching inspection step with id {}", stepId);
-        return inspectionStepService.getStepById(stepId)
-                .map(ResponseEntity::ok)
+        return inspectionStepService.getStepById(stepId).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -92,9 +96,12 @@ public class InspectionStepController {
      * {@code 404 Not Found}, wenn der Step nicht existiert
      */
     @PatchMapping("/inspection-steps/{stepId}/status")
-    public ResponseEntity<InspectionStep> updateStatus(@PathVariable Long stepId, @RequestBody String newStatus) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<InspectionStep> updateStatus(@PathVariable
+    Long stepId, @RequestBody
+    String newStatus) {
         log.info("Updating status of step {} to {}", stepId, newStatus);
-        
+
         try {
             StepStatus stepStatus = StepStatus.valueOf(newStatus.toUpperCase());
             InspectionStep updated = inspectionStepService.updateStatus(stepId, stepStatus);
@@ -114,7 +121,10 @@ public class InspectionStepController {
      * {@code 404 Not Found}, wenn der Step nicht existiert
      */
     @PatchMapping("/inspection-steps/{stepId}/comment")
-    public ResponseEntity<InspectionStep> updateComment(@PathVariable Long stepId, @RequestBody String newComment) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<InspectionStep> updateComment(@PathVariable
+    Long stepId, @RequestBody
+    String newComment) {
         log.info("Updating comment of step {}", stepId);
         try {
             InspectionStep updated = inspectionStepService.updateComment(stepId, newComment);
@@ -133,7 +143,9 @@ public class InspectionStepController {
      * {@code 404 Not Found}, wenn der Step nicht existiert
      */
     @DeleteMapping("/inspection-steps/{stepId}")
-    public ResponseEntity<Void> deleteStep(@PathVariable Long stepId) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<Void> deleteStep(@PathVariable
+    Long stepId) {
         log.info("Deleting inspection step with id {}", stepId);
         try {
             inspectionStepService.deleteStep(stepId);

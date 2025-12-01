@@ -4,6 +4,7 @@ import de.dhbw.webenginspection.entity.ChecklistStep;
 import de.dhbw.webenginspection.service.ChecklistStepService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,9 @@ public class ChecklistStepController {
      * @return eine Liste aller zugehörigen {@link ChecklistStep}-Entitäten
      */
     @GetMapping("/checklists/{checklistId}/steps")
-    public List<ChecklistStep> getStepsForChecklist(@PathVariable Long checklistId) {
+    @PreAuthorize("authenticated")
+    public List<ChecklistStep> getStepsForChecklist(@PathVariable
+    Long checklistId) {
         log.info("Fetching steps for checklist with id {}", checklistId);
         return checklistStepService.getStepsForChecklist(checklistId);
     }
@@ -48,11 +51,11 @@ public class ChecklistStepController {
      * kein Schritt mit der ID existiert
      */
     @GetMapping("/checklist-steps/{id}")
-    public ResponseEntity<ChecklistStep> getStepById(@PathVariable Long id) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<ChecklistStep> getStepById(@PathVariable
+    Long id) {
         log.info("Fetching checklist step with id {}", id);
-        return checklistStepService.getStepById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return checklistStepService.getStepById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -64,10 +67,12 @@ public class ChecklistStepController {
      * {@code 404 Not Found}, wenn die Checkliste nicht existiert
      */
     @PostMapping("/checklists/{checklistId}/steps")
-    public ResponseEntity<ChecklistStep> createStep(@PathVariable Long checklistId,
-            @RequestBody ChecklistStep step) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChecklistStep> createStep(@PathVariable
+    Long checklistId, @RequestBody
+    ChecklistStep step) {
         log.info("Creating new step for checklist with id {}", checklistId);
-        
+
         try {
             ChecklistStep created = checklistStepService.createStep(checklistId, step);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -87,10 +92,12 @@ public class ChecklistStepController {
      * {@code 404 Not Found}, wenn der Schritt nicht existiert
      */
     @PutMapping("/checklist-steps/{id}")
-    public ResponseEntity<ChecklistStep> updateStep(@PathVariable Long id,
-            @RequestBody ChecklistStep updated) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChecklistStep> updateStep(@PathVariable
+    Long id, @RequestBody
+    ChecklistStep updated) {
         log.info("Updating checklist step with id {}", id);
-        
+
         try {
             ChecklistStep saved = checklistStepService.updateStep(id, updated);
             return ResponseEntity.ok(saved);
@@ -108,9 +115,11 @@ public class ChecklistStepController {
      * wenn der Schritt nicht existiert
      */
     @DeleteMapping("/checklist-steps/{id}")
-    public ResponseEntity<Void> deleteStep(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteStep(@PathVariable
+    Long id) {
         log.info("Deleting checklist step with id {}", id);
-        
+
         try {
             checklistStepService.deleteStep(id);
             return ResponseEntity.noContent().build();

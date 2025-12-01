@@ -3,6 +3,7 @@ package de.dhbw.webenginspection.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,10 +39,13 @@ public class AuthController {
      *
      * @param request die Login-Anfrage mit Username und Passwort
      * @return die User-Informationen (ohne Passwort-Hash)
-     * @throws IllegalArgumentException wenn Username oder Passwort ungültig sind
+     * @throws IllegalArgumentException wenn Username oder Passwort ungültig
+     * sind
      */
     @PostMapping("/login")
-    public UserResponse login(@Validated @RequestBody LoginRequest request) {
+    public UserResponse login(@Validated
+    @RequestBody
+    LoginRequest request) {
         log.info("Login attempt for user '{}'", request.getUsername());
         User user = userService.validateLogin(request.getUsername(), request.getPassword());
         log.info("Login successful for user '{}'", user.getUsername());
@@ -57,16 +61,17 @@ public class AuthController {
      * SecurityContext) zurückgegeben werden.
      *
      * @param userId die ID des gesuchten Users
-     * @return {@code 200 OK} mit den User-Informationen oder {@code 404 Not Found}
+     * @return {@code 200 OK} mit den User-Informationen oder
+     * {@code 404 Not Found}
      */
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getMe(@RequestParam("userId") Long userId) {
+    @PreAuthorize("authenticated")
+    public ResponseEntity<UserResponse> getMe(@RequestParam("userId")
+    Long userId) {
         log.info("Fetching user with id {}", userId);
-        return userService.getUserById(userId)
-                .map(user -> {
-                    log.info("User found with id {}", userId);
-                    return ResponseEntity.ok(UserResponse.fromEntity(user));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return userService.getUserById(userId).map(user -> {
+            log.info("User found with id {}", userId);
+            return ResponseEntity.ok(UserResponse.fromEntity(user));
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

@@ -102,7 +102,7 @@
 - [x] Passwort-Hashing mit BCrypt konfiguriert
 - [x] Login-Endpunkt implementiert (/api/auth/login, gibt User-Daten zurück)
 - [x] Endpoint zum Laden der Inspektionen des Users (GET /api/inspections/by-user/{userId})
-- [ ] Security-Regeln definiert (aktuell: alle Endpoints offen, echte Autorisierung noch ausstehend)
+- [x] Security-Regeln definiert
 
 ## 2. Frontend – React (Vite)
 
@@ -254,6 +254,7 @@
 ### Neu als erledigt markiert:
 
 **Backend (1.4, 1.5, 1.8):**
+
 - Verantwortlicher Mitarbeiter in Inspection (assignedInspector)
 - Datum-Felder (plannedDate, startedAt, finishedAt)
 - InspectionStatus-Enum mit PLANNED, IN_PROGRESS, COMPLETED
@@ -265,11 +266,13 @@
 - Endpoint /api/inspections/by-user/{userId}
 
 **API-Tests (3.4, 3.6):**
+
 - ChecklistStep- und InspectionStep-Requests vorhanden
 - Auth-Requests für Login vorhanden
 - User-Endpoints in Bruno vorhanden
 
 **Frontend (2.2):**
+
 - Fehler-Handling via Axios-Interceptor vorhanden
 
 ### Noch offen (wichtigste Punkte):

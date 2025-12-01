@@ -5,6 +5,7 @@ import de.dhbw.webenginspection.entity.Inspection;
 import de.dhbw.webenginspection.service.InspectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class InspectionController {
      * @return eine Liste aller {@link Inspection}-Entitäten
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Inspection> getAll() {
         log.info("Fetching all inspections");
         return inspectionService.getAllInspections();
@@ -49,10 +51,11 @@ public class InspectionController {
      * falls keine Inspection mit der angegebenen ID existiert
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Inspection> getById(@PathVariable Long id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSPECTOR')")
+    public ResponseEntity<Inspection> getById(@PathVariable
+    Long id) {
         log.info("Fetching inspection with id {}", id);
-        return inspectionService.getInspectionById(id)
-                .map(ResponseEntity::ok)
+        return inspectionService.getInspectionById(id).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -67,7 +70,9 @@ public class InspectionController {
      * {@code null})
      */
     @GetMapping("/by-user/{userId}")
-    public ResponseEntity<List<Inspection>> getByUser(@PathVariable Long userId) {
+    @PreAuthorize("hasRole('ADMIN') or @userService.isCurrentUser(#userId)")
+    public ResponseEntity<List<Inspection>> getByUser(@PathVariable
+    Long userId) {
         log.info("Fetching inspections for user with id {}", userId);
         List<Inspection> inspections = inspectionService.getInspectionsForUser(userId);
         return ResponseEntity.ok(inspections);
@@ -76,7 +81,7 @@ public class InspectionController {
     /**
      * Erstellt eine neue Inspection auf Basis einer bestehenden Checklist. Die
      * Details werden aus dem Request gelesen, die verknüpfte Checklist wird
-     * über deren ID ermittelt.
+     * über deren ID ermittelt (nur für Admins).
      *
      * @param request die Daten zur Erstellung der Inspection, inklusive
      * Checklist-ID
@@ -84,7 +89,10 @@ public class InspectionController {
      * {@code 400 Bad Request}, wenn die referenzierte Checklist nicht existiert
      */
     @PostMapping
-    public ResponseEntity<Inspection> create(@Valid @RequestBody InspectionCreateRequest request) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Inspection> create(@Valid
+    @RequestBody
+    InspectionCreateRequest request) {
         log.info("Creating inspection for checklist {}", request.getChecklistId());
         try {
             Inspection created = inspectionService.createInspectionFromChecklist(request);
@@ -105,7 +113,10 @@ public class InspectionController {
      * {@code 404 Not Found}, wenn keine Inspection mit der ID existiert
      */
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Inspection> updateStatus(@PathVariable Long id, @RequestBody String newStatus) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'INSPECTOR')")
+    public ResponseEntity<Inspection> updateStatus(@PathVariable
+    Long id, @RequestBody
+    String newStatus) {
         log.info("Updating status of inspection with id {} to {}", id, newStatus);
         try {
             Inspection updated = inspectionService.updateStatus(id, newStatus);
@@ -117,14 +128,16 @@ public class InspectionController {
     }
 
     /**
-     * Löscht eine Inspection anhand ihrer ID.
+     * Löscht eine Inspection anhand ihrer ID (nur für Admins).
      *
      * @param id die ID der zu löschenden Inspection
      * @return {@code 204 No Content} bei erfolgreicher Löschung oder
      * {@code 404 Not Found}, wenn keine Inspection mit der ID existiert
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable
+    Long id) {
         log.info("Deleting inspection with id {}", id);
         try {
             inspectionService.deleteInspection(id);

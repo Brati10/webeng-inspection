@@ -7,7 +7,12 @@ meta {
 get {
   url: {{baseUrl}}/api/inspections
   body: none
-  auth: inherit
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin123
 }
 
 settings {
