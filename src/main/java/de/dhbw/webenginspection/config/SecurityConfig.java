@@ -37,13 +37,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/**").authenticated().requestMatchers("/api/inspections/**")
-                        .authenticated().requestMatchers("/api/checklists/**").authenticated()
-                        .requestMatchers("/api/checklist-steps/**").authenticated()
-                        .requestMatchers("/api/inspection-steps/**").authenticated().requestMatchers("/api/**")
-                        .authenticated().anyRequest().permitAll())
+        http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(request -> {
+            var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+            corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:5173"));
+            corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+            corsConfig.setAllowedHeaders(java.util.List.of("*"));
+            corsConfig.setAllowCredentials(true);
+            return corsConfig;
+        })).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/**").authenticated().requestMatchers("/api/inspections/**").authenticated()
+                .requestMatchers("/api/checklists/**").authenticated().requestMatchers("/api/checklist-steps/**")
+                .authenticated().requestMatchers("/api/inspection-steps/**").authenticated().requestMatchers("/api/**")
+                .authenticated().anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionConcurrency(concurrency -> concurrency.maximumSessions(1)))
                 .httpBasic(Customizer.withDefaults());
 

@@ -21,4 +21,7 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
     // Inspektionen, die einem bestimmten User (verantwortlicher Mitarbeiter)
     // zugeordnet sind
     List<Inspection> findByAssignedInspectorId(Long userId);
+
+    // Anzahl der Inspektionen, die eine bestimmte Checkliste verwenden
+    long countByChecklistId(Long checklistId);
 }

@@ -2,11 +2,12 @@ package de.dhbw.webenginspection.service;
 
 import de.dhbw.webenginspection.entity.Checklist;
 import de.dhbw.webenginspection.entity.ChecklistStep;
+import de.dhbw.webenginspection.error.ChecklistInUseException;
 import de.dhbw.webenginspection.repository.ChecklistRepository;
+import de.dhbw.webenginspection.repository.InspectionRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,14 +28,18 @@ public class ChecklistService {
 
     private final ChecklistRepository checklistRepository;
 
-    public ChecklistService(ChecklistRepository checklistRepository) {
+    private final InspectionRepository inspectionRepository;
+
+    public ChecklistService(ChecklistRepository checklistRepository, InspectionRepository inspectionRepository) {
         this.checklistRepository = checklistRepository;
+        this.inspectionRepository = inspectionRepository;
     }
 
     /**
      * Gibt alle vorhandenen Checklisten zurück.
      *
-     * @return eine Liste aller {@link Checklist}-Entitäten (niemals {@code null})
+     * @return eine Liste aller {@link Checklist}-Entitäten (niemals
+     * {@code null})
      */
     public List<Checklist> getAllChecklists() {
         log.info("Fetching all checklists");
@@ -45,7 +50,8 @@ public class ChecklistService {
      * Gibt die Checklist mit der angegebenen ID zurück.
      *
      * @param id die eindeutige ID der gesuchten Checklist
-     * @return ein Optional mit der gefundenen {@link Checklist}, oder leer wenn nicht existiert
+     * @return ein Optional mit der gefundenen {@link Checklist}, oder leer wenn
+     * nicht existiert
      */
     @Transactional(readOnly = true)
     public Optional<Checklist> getChecklistById(Long id) {
@@ -92,7 +98,7 @@ public class ChecklistService {
      */
     public Checklist updateChecklist(Long id, Checklist updated) {
         log.info("Updating checklist with id {}", id);
-        
+
         Checklist existing = getChecklistById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Checklist with id " + id + " not found"));
 
@@ -121,6 +127,8 @@ public class ChecklistService {
      * @param id die ID der zu löschenden Checklist
      * @throws IllegalArgumentException wenn keine Checklist mit der ID
      * existiert
+     * @throws ChecklistInUseException wenn die Checklist von Inspections
+     * verwendet wird
      */
     public void deleteChecklist(Long id) {
         log.info("Deleting checklist with id {}", id);
@@ -128,6 +136,13 @@ public class ChecklistService {
         if (!checklistRepository.existsById(id)) {
             log.warn("Checklist with id {} not found for deletion", id);
             throw new IllegalArgumentException("Checklist with id " + id + " not found");
+        }
+
+        // Prüfe ob abhängige Inspections existieren
+        long inspectionCount = inspectionRepository.countByChecklistId(id);
+        if (inspectionCount > 0) {
+            log.warn("Cannot delete checklist {} - {} inspections depend on it", id, inspectionCount);
+            throw new ChecklistInUseException((int) inspectionCount);
         }
 
         checklistRepository.deleteById(id);

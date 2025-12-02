@@ -3,9 +3,12 @@ package de.dhbw.webenginspection.controller;
 import de.dhbw.webenginspection.dto.InspectionCreateRequest;
 import de.dhbw.webenginspection.entity.Inspection;
 import de.dhbw.webenginspection.service.InspectionService;
+import de.dhbw.webenginspection.service.UserService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +30,11 @@ public class InspectionController {
 
     private final InspectionService inspectionService;
 
-    public InspectionController(InspectionService inspectionService) {
+    private final UserService userService;
+
+    public InspectionController(InspectionService inspectionService, UserService userService) {
         this.inspectionService = inspectionService;
+        this.userService = userService;
     }
 
     /**
@@ -66,14 +72,31 @@ public class InspectionController {
      * Beispiel: GET /api/inspections/by-user/1
      *
      * @param userId ID des Benutzers
+     * @param authentication die aktuelle Authentication
      * @return Liste der Inspektionen des Users (ggf. leer, aber niemals
      * {@code null})
      */
     @GetMapping("/by-user/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or @userService.isCurrentUser(#userId)")
+    @PreAuthorize("authenticated")
     public ResponseEntity<List<Inspection>> getByUser(@PathVariable
-    Long userId) {
+    Long userId, Authentication authentication) {
         log.info("Fetching inspections for user with id {}", userId);
+
+        String username = authentication.getName();
+
+        // Checke ob der User die Berechtigung hat
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        boolean isOwnUser = userService.getUserById(userId).map(user -> user.getUsername().equals(username))
+                .orElse(false);
+
+        // Inspector darf nur seine eigenen sehen, Admin alle
+        if (!isAdmin && !isOwnUser) {
+            log.warn("User {} tried to access inspections of user {}", username, userId);
+            return ResponseEntity.status(403).build(); // Forbidden
+        }
+
         List<Inspection> inspections = inspectionService.getInspectionsForUser(userId);
         return ResponseEntity.ok(inspections);
     }
