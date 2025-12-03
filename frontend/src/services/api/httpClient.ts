@@ -2,20 +2,25 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:8080/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true, // Wichtig: Sendet Cookies mit
 });
 
-// Request-Interceptor: Basic Auth Header hinzufügen
+// Request-Interceptor: Basic Auth Header hinzufügen und Content-Type setzen
 api.interceptors.request.use((config) => {
-  //const user = localStorage.getItem("user");
   const credentials = localStorage.getItem("credentials");
 
   // Falls wir Credentials gespeichert haben, schicke sie als Basic Auth
   if (credentials) {
     config.headers.Authorization = `Basic ${credentials}`;
+  }
+
+  // Content-Type setzen, ABER nicht für FormData (Browser muss das auto-generieren)
+  if (config.data instanceof FormData) {
+    // FormData: Nicht Content-Type setzen, Browser generiert mit Boundary
+    delete config.headers["Content-Type"];
+  } else if (config.data && !config.headers["Content-Type"]) {
+    // Für andere Requests: Default auf application/json
+    config.headers["Content-Type"] = "application/json";
   }
 
   return config;

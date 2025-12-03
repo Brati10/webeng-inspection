@@ -8,14 +8,21 @@ import de.dhbw.webenginspection.repository.ChecklistStepRepository;
 import de.dhbw.webenginspection.repository.InspectionRepository;
 import de.dhbw.webenginspection.repository.InspectionStepRepository;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Service zur Verwaltung von {@link InspectionStep}-Entitäten. Bietet
@@ -27,6 +34,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public class InspectionStepService {
+
+    @Value("${app.upload.dir:uploads/photos}")
+    private String uploadDir;
 
     private static final Logger log = LoggerFactory.getLogger(InspectionStepService.class);
 
@@ -69,7 +79,8 @@ public class InspectionStepService {
      * Ruft einen einzelnen InspectionStep anhand seiner ID ab.
      *
      * @param id die ID des gesuchten Schritts
-     * @return ein Optional mit dem gefundenen {@link InspectionStep}, oder leer wenn nicht existiert
+     * @return ein Optional mit dem gefundenen {@link InspectionStep}, oder leer
+     * wenn nicht existiert
      */
     public Optional<InspectionStep> getStepById(Long id) {
         return inspectionStepRepository.findById(id);
@@ -108,6 +119,73 @@ public class InspectionStepService {
 
         InspectionStep saved = inspectionStepRepository.save(stepData);
         log.info("Created inspection step with id {} for inspection id {}", saved.getId(), inspectionId);
+
+        return saved;
+    }
+
+    /**
+     * Speichert eine hochgeladene Fotodatei auf dem lokalen Dateisystem und
+     * gibt den Pfad zurück.
+     *
+     * @param stepId die ID des InspectionStep
+     * @param file die hochgeladene Datei
+     * @return der gespeicherte Dateipfad
+     * @throws IllegalArgumentException bei Validierungsfehlern oder
+     * I/O-Problemen
+     */
+    public String savePhoto(Long stepId, MultipartFile file) {
+        log.info("Saving photo for inspection step with id {}", stepId);
+
+        // Validierung
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Datei ist leer");
+        }
+        if (file.getSize() > 5 * 1024 * 1024) { // 5MB max
+            throw new IllegalArgumentException("Datei ist zu groß (Max. 5MB)");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Nur Bilddateien sind erlaubt");
+        }
+
+        try {
+            // Erstelle Upload-Verzeichnis falls nicht vorhanden
+            Path uploadPath = Paths.get(uploadDir);
+            Files.createDirectories(uploadPath);
+
+            // Generiere eindeutigen Dateinamen
+            String filename = "step_" + stepId + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(filename);
+
+            // Speichere Datei
+            Files.write(filePath, file.getBytes());
+            log.info("Photo saved to {}", filePath);
+
+            return filename;
+        } catch (IOException e) {
+            log.error("Error saving photo: {}", e.getMessage());
+            throw new IllegalArgumentException("Fehler beim Speichern der Datei: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Aktualisiert den photoPath eines InspectionStep.
+     *
+     * @param id die ID des Steps
+     * @param photoPath der neue Pfad
+     * @return der aktualisierte InspectionStep
+     * @throws IllegalArgumentException wenn Step nicht existiert
+     */
+    public InspectionStep updatePhotoPath(Long id, String photoPath) {
+        log.info("Updating photo path of inspection step with id {}", id);
+
+        InspectionStep existing = getStepById(id)
+                .orElseThrow(() -> new IllegalArgumentException("InspectionStep with id " + id + " not found"));
+        existing.setPhotoPath(photoPath);
+
+        InspectionStep saved = inspectionStepRepository.save(existing);
+        log.info("Updated photo path of inspection step with id {}", saved.getId());
 
         return saved;
     }

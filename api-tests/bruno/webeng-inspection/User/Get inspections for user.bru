@@ -7,9 +7,15 @@ meta {
 get {
   url: {{baseUrl}}/api/inspections/by-user/1
   body: none
-  auth: inherit
+  auth: basic
+}
+
+auth:basic {
+  username: inspector
+  password: inspector123
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

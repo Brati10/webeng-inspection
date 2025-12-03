@@ -7,11 +7,16 @@ meta {
 post {
   url: {{baseUrl}}/api/checklists
   body: json
-  auth: inherit
+  auth: basic
 }
 
 headers {
   Content-Type: application/json
+}
+
+auth:basic {
+  username: admin
+  password: admin123
 }
 
 body:json {

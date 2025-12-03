@@ -6,6 +6,7 @@ interface InspectionStep {
   id: number;
   status: "PASSED" | "FAILED" | "NOT_APPLICABLE";
   comment: string;
+  photoPath?: string;
   checklistStep: { id: number; description: string };
 }
 
@@ -16,6 +17,8 @@ interface Inspection {
   plantName: string;
   generalComment: string;
 }
+
+const BACKEND_URL = "http://localhost:8080";
 
 export default function InspectionDetailPage() {
   const { inspectionId } = useParams();
@@ -28,6 +31,9 @@ export default function InspectionDetailPage() {
   const [savingCommentStepId, setSavingCommentStepId] = useState<number | null>(
     null
   );
+  const [uploadingPhotoStepId, setUploadingPhotoStepId] = useState<
+    number | null
+  >(null);
   const [editingComments, setEditingComments] = useState<Map<number, string>>(
     new Map()
   );
@@ -45,25 +51,14 @@ export default function InspectionDetailPage() {
         const inspectionRes = await api.get(`/inspections/${inspectionId}`);
         setInspection(inspectionRes.data);
 
-        // Steps versuchen zu laden - mit verschiedenen Endpoints
+        // Steps laden - nur der korrekte Endpoint
         let stepsData: InspectionStep[] = [];
         try {
-          const stepsRes = await api.get(
-            `/inspection-steps/inspection/${inspectionId}`
-          );
+          const stepsRes = await api.get(`/inspections/${inspectionId}/steps`);
           stepsData = stepsRes.data;
         } catch (stepErr) {
-          console.warn("First steps endpoint failed, trying alternative...");
-          try {
-            const stepsRes = await api.get(
-              `/inspections/${inspectionId}/steps`
-            );
-            stepsData = stepsRes.data;
-          } catch (stepErr2) {
-            console.warn(
-              "Both steps endpoints failed, continuing without steps"
-            );
-          }
+          console.warn("Failed to fetch steps:", stepErr);
+          // Keine Steps oder Fehler - fortfahren mit leerer Liste
         }
 
         setSteps(stepsData);
@@ -128,6 +123,31 @@ export default function InspectionDetailPage() {
       alert("Fehler beim Aktualisieren des Kommentars");
     } finally {
       setSavingCommentStepId(null);
+    }
+  };
+
+  const uploadPhoto = async (stepId: number, file: File) => {
+    setUploadingPhotoStepId(stepId);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await api.post(
+        `/inspection-steps/${stepId}/photo`,
+        formData
+      );
+
+      setSteps(
+        steps.map((s) =>
+          s.id === stepId ? { ...s, photoPath: response.data.photoPath } : s
+        )
+      );
+      alert("Foto erfolgreich hochgeladen!");
+    } catch (err: any) {
+      console.error("Error uploading photo:", err);
+      alert(err.response?.data?.message || "Fehler beim Foto-Upload");
+    } finally {
+      setUploadingPhotoStepId(null);
     }
   };
 
@@ -247,6 +267,50 @@ export default function InspectionDetailPage() {
                     : "Kommentar speichern"}
                 </button>
               </p>
+
+              <div style={{ marginTop: "1rem" }}>
+                <strong>Foto:</strong>
+                <div style={{ marginTop: "0.5rem" }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        uploadPhoto(step.id, file);
+                      }
+                    }}
+                    disabled={uploadingPhotoStepId === step.id}
+                    style={{ marginBottom: "0.5rem" }}
+                  />
+                  {uploadingPhotoStepId === step.id && (
+                    <p style={{ color: "#007bff", fontSize: "0.9rem" }}>
+                      Foto wird hochgeladen...
+                    </p>
+                  )}
+                </div>
+                {step.photoPath && (
+                  <div
+                    style={{
+                      marginTop: "0.5rem",
+                      border: "1px solid #ddd",
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      display: "inline-block",
+                    }}
+                  >
+                    <img
+                      src={`${BACKEND_URL}/api/files/${step.photoPath}`}
+                      alt="Step photo"
+                      style={{
+                        maxWidth: "300px",
+                        maxHeight: "300px",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -1,0 +1,14 @@
+- Einleitung
+  - Motivation & Problemstellung
+- Grundlagen & Kontext
+- Das Framework im Detail
+  - Architektur & Konzepte
+  - Technische Funktionalitäten
+  - Praktische Anwendung
+    - Code-Beispiele, Use-Cases, Einsatzgebiete
+  - Vergleiche und Einordnung
+    - Stärken & Schwächen, Alternativen
+- Kritische Reflexion
+  - Vor- und Nachteile, eigene Bewertung
+  - Lessons Learned
+- Zusammenfassung & Ausblick

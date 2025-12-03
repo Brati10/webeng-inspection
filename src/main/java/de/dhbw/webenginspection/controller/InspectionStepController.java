@@ -6,7 +6,7 @@ import de.dhbw.webenginspection.service.InspectionStepService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +84,17 @@ public class InspectionStepController {
         log.info("Fetching inspection step with id {}", stepId);
         return inspectionStepService.getStepById(stepId).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/inspection-steps/{stepId}/photo")
+    @PreAuthorize("authenticated")
+    public ResponseEntity<InspectionStep> uploadPhoto(@PathVariable
+    Long stepId, @RequestParam("file")
+    MultipartFile file) {
+        // Speichern der Datei und Pfad in photoPath
+        String photoPath = inspectionStepService.savePhoto(stepId, file);
+        InspectionStep updated = inspectionStepService.updatePhotoPath(stepId, photoPath);
+        return ResponseEntity.ok(updated);
     }
 
     /**

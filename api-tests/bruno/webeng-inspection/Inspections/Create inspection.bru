@@ -7,11 +7,16 @@ meta {
 post {
   url: {{baseUrl}}/api/inspections
   body: json
-  auth: inherit
+  auth: basic
 }
 
 headers {
   Content-Type: application/json
+}
+
+auth:basic {
+  username: admin
+  password: admin123
 }
 
 body:json {
@@ -21,7 +26,7 @@ body:json {
     "plantName": "Werk Mannheim",
     "plannedDate": "2025-01-15T10:00:00",
     "generalComment": "Regelmäßige Monatsinspektion.",
-    "assignedInspectorId": 1
+    "assignedInspectorId": 2
   }
 }
 

@@ -45,10 +45,11 @@ public class SecurityConfig {
             corsConfig.setAllowCredentials(true);
             return corsConfig;
         })).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers("/api/auth/**").authenticated().requestMatchers("/api/inspections/**").authenticated()
-                .requestMatchers("/api/checklists/**").authenticated().requestMatchers("/api/checklist-steps/**")
-                .authenticated().requestMatchers("/api/inspection-steps/**").authenticated().requestMatchers("/api/**")
-                .authenticated().anyRequest().permitAll())
+                .requestMatchers("/api/files/**").permitAll().requestMatchers("/api/auth/**").authenticated()
+                .requestMatchers("/api/inspections/**").authenticated().requestMatchers("/api/checklists/**")
+                .authenticated().requestMatchers("/api/checklist-steps/**").authenticated()
+                .requestMatchers("/api/inspection-steps/**").authenticated().requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionConcurrency(concurrency -> concurrency.maximumSessions(1)))
                 .httpBasic(Customizer.withDefaults());
 
