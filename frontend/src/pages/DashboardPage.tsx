@@ -11,11 +11,14 @@ interface Inspection {
   assignedInspector: { id: number; displayName: string };
 }
 
+type StatusFilter = "PLANNED" | "IN_PROGRESS" | "COMPLETED";
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [inspections, setInspections] = useState<Inspection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("PLANNED");
 
   useEffect(() => {
     const fetchInspections = async () => {
@@ -47,6 +50,21 @@ export default function DashboardPage() {
   ).length;
   const completed = inspections.filter((i) => i.status === "COMPLETED").length;
 
+  const filteredInspections = inspections.filter(
+    (i) => i.status === selectedStatus
+  );
+
+  const getStatusLabel = (status: StatusFilter) => {
+    switch (status) {
+      case "PLANNED":
+        return "Geplant";
+      case "IN_PROGRESS":
+        return "In Bearbeitung";
+      case "COMPLETED":
+        return "Abgeschlossen";
+    }
+  };
+
   if (loading) return <p className="text-muted">Lädt Dashboard...</p>;
   if (error) return <div className="alert alert-danger">{error}</div>;
 
@@ -62,15 +80,51 @@ export default function DashboardPage() {
       <section className="dashboard-section">
         <h2>Kennzahlen</h2>
         <div className="stats-grid">
-          <div className="stat-card stat-planned">
+          <div
+            className={`stat-card stat-planned ${
+              selectedStatus === "PLANNED" ? "stat-active" : ""
+            }`}
+            onClick={() => setSelectedStatus("PLANNED")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setSelectedStatus("PLANNED");
+              }
+            }}
+          >
             <div className="stat-number">{planned}</div>
             <div className="stat-label">Geplant</div>
           </div>
-          <div className="stat-card stat-inprogress">
+          <div
+            className={`stat-card stat-inprogress ${
+              selectedStatus === "IN_PROGRESS" ? "stat-active" : ""
+            }`}
+            onClick={() => setSelectedStatus("IN_PROGRESS")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setSelectedStatus("IN_PROGRESS");
+              }
+            }}
+          >
             <div className="stat-number">{inProgress}</div>
             <div className="stat-label">In Bearbeitung</div>
           </div>
-          <div className="stat-card stat-completed">
+          <div
+            className={`stat-card stat-completed ${
+              selectedStatus === "COMPLETED" ? "stat-active" : ""
+            }`}
+            onClick={() => setSelectedStatus("COMPLETED")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setSelectedStatus("COMPLETED");
+              }
+            }}
+          >
             <div className="stat-number">{completed}</div>
             <div className="stat-label">Abgeschlossen</div>
           </div>
@@ -78,9 +132,10 @@ export default function DashboardPage() {
       </section>
 
       <section className="dashboard-section">
-        <h2>Inspektionen</h2>
-        {inspections.length === 0 ? (
-          <p className="text-muted">Keine Inspektionen vorhanden.</p>
+        {filteredInspections.length === 0 ? (
+          <p className="text-muted">
+            Keine Inspektionen im Status "{getStatusLabel(selectedStatus)}".
+          </p>
         ) : (
           <div className="table-wrapper">
             <table className="inspections-table">
@@ -88,34 +143,22 @@ export default function DashboardPage() {
                 <tr>
                   <th>Titel</th>
                   <th>Anlage</th>
-                  <th>Status</th>
-                  <th>Inspector</th>
-                  <th>Aktion</th>
+                  <th>Inspektor</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {inspections.map((inspection) => (
+                {filteredInspections.map((inspection) => (
                   <tr key={inspection.id}>
                     <td className="cell-title">{inspection.title}</td>
                     <td>{inspection.plantName}</td>
-                    <td>
-                      <span
-                        className={`badge badge-${inspection.status.toLowerCase()}`}
-                      >
-                        {inspection.status === "PLANNED"
-                          ? "Geplant"
-                          : inspection.status === "IN_PROGRESS"
-                          ? "In Bearbeitung"
-                          : "Abgeschlossen"}
-                      </span>
-                    </td>
                     <td>{inspection.assignedInspector?.displayName}</td>
                     <td>
                       <a
                         href={`/inspections/${inspection.id}`}
-                        className="link-action"
+                        className="btn-primary btn-sm"
                       >
-                        Anzeigen
+                        Bearbeiten
                       </a>
                     </td>
                   </tr>

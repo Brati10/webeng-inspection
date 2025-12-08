@@ -73,51 +73,45 @@
 
 .info-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding-bottom: var(--spacing-lg);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
   border-bottom: 1px solid var(--border-light);
 }
 
-.info-row:last-child {
-  padding-bottom: 0;
+.info-row:last-of-type {
   border-bottom: none;
 }
 
 .info-label {
   font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  font-size: var(--font-size-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--primary-dark);
+  color: var(--text-secondary);
+  min-width: 100px;
+  flex-shrink: 0;
 }
 
 .info-value {
-  font-size: var(--font-size-base);
   color: var(--text-primary);
 }
 
-.status-select {
-  padding: var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  cursor: pointer;
+/* ============================================
+   STATUS ROW (Badge + Buttons)
+   ============================================ */
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
+  border-top: 1px solid var(--border-light);
 }
 
-.status-select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(74, 123, 167, 0.1);
-}
-
-.status-select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.status-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 /* ============================================
@@ -158,7 +152,9 @@
   margin: 0;
   color: var(--text-primary);
   font-size: var(--font-size-lg);
-  flex: 1;
+  flex: 0 1 50%;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .status-badge {
@@ -169,7 +165,8 @@
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast);
-  min-width: 120px;
+  flex: 1;
+  min-width: auto;
 }
 
 .status-badge.status-passed {
@@ -324,6 +321,20 @@
   }
 
   .detail-header h1 {
+    width: 100%;
+  }
+
+  .status-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .status-actions button {
     width: 100%;
   }
 

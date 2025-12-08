@@ -57,7 +57,6 @@ export default function Navbar() {
       <div className="navbar-user">
         <div className="user-info">
           <span className="user-name">{user?.displayName}</span>
-          <span className="user-role">{user?.role}</span>
         </div>
         <button onClick={handleLogout} className="btn-danger btn-sm">
           Logout

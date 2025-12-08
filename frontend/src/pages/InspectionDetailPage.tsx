@@ -76,6 +76,40 @@ export default function InspectionDetailPage() {
     fetchData();
   }, [inspectionId]);
 
+  const getStatusActions = () => {
+    switch (inspection?.status) {
+      case "PLANNED":
+        return [
+          { label: "Beginnen", status: "IN_PROGRESS", variant: "primary" },
+          { label: "Abbrechen", status: "PLANNED", variant: "secondary" },
+        ];
+      case "IN_PROGRESS":
+        return [
+          { label: "Abschließen", status: "COMPLETED", variant: "success" },
+          { label: "Zurücksetzen", status: "PLANNED", variant: "secondary" },
+        ];
+      case "COMPLETED":
+        return [
+          { label: "Wieder öffnen", status: "IN_PROGRESS", variant: "primary" },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const getStatusLabel = () => {
+    switch (inspection?.status) {
+      case "PLANNED":
+        return "Geplant";
+      case "IN_PROGRESS":
+        return "In Bearbeitung";
+      case "COMPLETED":
+        return "Abgeschlossen";
+      default:
+        return "";
+    }
+  };
+
   const updateStepStatus = async (stepId: number, newStatus: string) => {
     setIsUpdating(true);
     try {
@@ -174,6 +208,8 @@ export default function InspectionDetailPage() {
   if (error) return <div className="alert alert-danger">{error}</div>;
   if (!inspection) return <p className="text-muted">Keine Daten gefunden</p>;
 
+  const statusActions = getStatusActions();
+
   return (
     <div className="inspection-detail">
       <div className="detail-header">
@@ -193,19 +229,28 @@ export default function InspectionDetailPage() {
             <span className="info-label">Anlage:</span>
             <span className="info-value">{inspection.plantName}</span>
           </div>
-          <div className="info-row">
-            <span className="info-label">Status:</span>
-            <select
-              value={inspection.status}
-              onChange={(e) => updateInspectionStatus(e.target.value)}
-              disabled={isUpdating}
-              className="status-select"
-            >
-              <option value="PLANNED">Geplant</option>
-              <option value="IN_PROGRESS">In Bearbeitung</option>
-              <option value="COMPLETED">Abgeschlossen</option>
-            </select>
-          </div>
+
+          {statusActions.length > 0 && (
+            <div className="status-row">
+              <span
+                className={`badge badge-${inspection.status.toLowerCase()}`}
+              >
+                {getStatusLabel()}
+              </span>
+              <div className="status-actions">
+                {statusActions.map((action) => (
+                  <button
+                    key={action.status}
+                    onClick={() => updateInspectionStatus(action.status)}
+                    disabled={isUpdating}
+                    className={`btn-${action.variant} btn-sm`}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

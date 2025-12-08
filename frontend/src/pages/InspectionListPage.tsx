@@ -57,7 +57,7 @@ export default function InspectionListPage() {
       <div className="page-header">
         <h1>Inspektionen (Admin-Bereich)</h1>
         <Link to="/inspections/create" className="btn-primary">
-          + Neue Inspection
+          + Neue Inspektion
         </Link>
       </div>
 
@@ -87,7 +87,7 @@ export default function InspectionListPage() {
                   <span className="info-value">{inspection.plantName}</span>
                 </div>
                 <div className="info-group">
-                  <span className="info-label">Inspector:</span>
+                  <span className="info-label">Inspektor:</span>
                   <span className="info-value">
                     {inspection.assignedInspector?.displayName}
                   </span>
