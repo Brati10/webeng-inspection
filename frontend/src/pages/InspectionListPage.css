@@ -1,0 +1,179 @@
+/* ============================================
+   INSPECTION LIST PAGE STYLES
+   ============================================ */
+
+.inspection-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--primary-darker);
+  flex: 1;
+}
+
+.page-header a {
+  white-space: nowrap;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-3xl);
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  border: 1px dashed var(--border-color);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  margin: 0;
+}
+
+/* ============================================
+   INSPECTION GRID
+   ============================================ */
+
+.inspection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.inspection-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.inspection-card .card-header {
+  padding: var(--spacing-md);
+  background-color: var(--primary-lighter);
+  color: var(--text-inverse);
+  border-bottom: 2px solid var(--primary-light);
+  margin: calc(var(--spacing-md) * -1);
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.inspection-card .card-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-inverse);
+  flex: 1;
+}
+
+.inspection-card .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.info-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.info-value {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.inspection-card .card-footer {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: var(--gray-50);
+  border-top: 1px solid var(--border-light);
+  margin: calc(var(--spacing-md) * -1);
+  margin-top: var(--spacing-md);
+  border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+}
+
+.inspection-card .card-footer a {
+  width: 100%;
+  text-align: center;
+}
+
+/* Status-spezifische Badge-Farben */
+.badge-planned {
+  background-color: #e7e7e7;
+  color: #333;
+}
+
+.badge-in_progress {
+  background-color: var(--warning-light);
+  color: #856404;
+}
+
+.badge-completed {
+  background-color: var(--success-light);
+  color: #155724;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .inspection-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header a {
+    width: 100%;
+  }
+
+  .inspection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inspection-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .inspection-card .card-header h3 {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .inspection-card .card-header h3 {
+    font-size: var(--font-size-base);
+  }
+
+  .info-value {
+    font-size: var(--font-size-sm);
+  }
+}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api/httpClient";
 import { useAuth } from "../context/useAuth";
+import "./InspectionListPage.css";
 
 interface Inspection {
   id: number;
@@ -18,7 +19,6 @@ export default function InspectionListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Nur ADMIN darf diese Page sehen
   useEffect(() => {
     if (user?.role !== "ADMIN") {
       navigate("/", { replace: true });
@@ -46,91 +46,64 @@ export default function InspectionListPage() {
   }, [user?.role]);
 
   if (!user || user.role !== "ADMIN") {
-    return <p>Zugriff verweigert</p>;
+    return <p className="text-muted">Zugriff verweigert</p>;
   }
 
-  if (loading) return <p>Lädt Inspektionen...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="text-muted">Lädt Inspektionen...</p>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
-    <div>
-      <h1>Inspektionen (Admin-Bereich)</h1>
-      <Link to="/inspections/create">
-        <button
-          style={{
-            padding: "0.5rem 1rem",
-            marginBottom: "1rem",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Neue Inspection
-        </button>
-      </Link>
+    <div className="inspection-list">
+      <div className="page-header">
+        <h1>Inspektionen (Admin-Bereich)</h1>
+        <Link to="/inspections/create" className="btn-primary">
+          + Neue Inspection
+        </Link>
+      </div>
 
       {inspections.length === 0 ? (
-        <p>Keine Inspektionen vorhanden.</p>
+        <div className="empty-state">
+          <p>Keine Inspektionen vorhanden.</p>
+        </div>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr
-              style={{
-                backgroundColor: "#f5f5f5",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Titel</th>
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Anlage</th>
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Status</th>
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>
-                Inspector
-              </th>
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Aktion</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inspections.map((inspection) => (
-              <tr
-                key={inspection.id}
-                style={{ borderBottom: "1px solid #ddd" }}
-              >
-                <td style={{ padding: "0.5rem" }}>{inspection.title}</td>
-                <td style={{ padding: "0.5rem" }}>{inspection.plantName}</td>
-                <td style={{ padding: "0.5rem" }}>
-                  <span
-                    style={{
-                      padding: "0.25rem 0.5rem",
-                      backgroundColor:
-                        inspection.status === "COMPLETED"
-                          ? "#d4edda"
-                          : inspection.status === "IN_PROGRESS"
-                          ? "#fff3cd"
-                          : "#e7e7e7",
-                      borderRadius: "4px",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    {inspection.status}
+        <div className="inspection-grid">
+          {inspections.map((inspection) => (
+            <div key={inspection.id} className="inspection-card card">
+              <div className="card-header">
+                <h3>{inspection.title}</h3>
+                <span
+                  className={`badge badge-${inspection.status.toLowerCase()}`}
+                >
+                  {inspection.status === "PLANNED"
+                    ? "Geplant"
+                    : inspection.status === "IN_PROGRESS"
+                    ? "In Bearbeitung"
+                    : "Abgeschlossen"}
+                </span>
+              </div>
+              <div className="card-body">
+                <div className="info-group">
+                  <span className="info-label">Anlage:</span>
+                  <span className="info-value">{inspection.plantName}</span>
+                </div>
+                <div className="info-group">
+                  <span className="info-label">Inspector:</span>
+                  <span className="info-value">
+                    {inspection.assignedInspector?.displayName}
                   </span>
-                </td>
-                <td style={{ padding: "0.5rem" }}>
-                  {inspection.assignedInspector?.displayName}
-                </td>
-                <td style={{ padding: "0.5rem" }}>
-                  <Link
-                    to={`/inspections/${inspection.id}`}
-                    style={{ color: "#007bff" }}
-                  >
-                    Bearbeiten
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+              <div className="card-footer">
+                <Link
+                  to={`/inspections/${inspection.id}`}
+                  className="btn-primary btn-sm"
+                >
+                  Bearbeiten
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

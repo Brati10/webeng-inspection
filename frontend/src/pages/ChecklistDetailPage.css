@@ -1,0 +1,224 @@
+/* ============================================
+   CHECKLIST DETAIL PAGE STYLES
+   ============================================ */
+
+.checklist-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.detail-header h1 {
+  margin: 0;
+  color: var(--primary-darker);
+  flex: 1;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary-light);
+  color: var(--text-inverse);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.btn-back:hover {
+  background-color: var(--accent-light);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-back:active {
+  background-color: var(--primary-dark);
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.detail-section h2 {
+  margin: 0;
+}
+
+/* ============================================
+   INFO CARD
+   ============================================ */
+
+.info-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.info-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary-dark);
+}
+
+.info-value {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.info-text {
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: var(--line-height-relaxed);
+  white-space: pre-wrap;
+}
+
+/* ============================================
+   STEPS LIST
+   ============================================ */
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.step-card {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  border-left: 4px solid var(--primary);
+}
+
+.step-card:hover {
+  border-left-color: var(--primary-dark);
+  background-color: var(--gray-50);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--primary-lighter);
+  color: var(--text-inverse);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+.step-content h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.requirement {
+  background-color: var(--gray-50);
+  border-left: 3px solid var(--warning);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+}
+
+.req-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--warning);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+}
+
+.requirement p {
+  margin: var(--spacing-sm) 0 0 0;
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .detail-header {
+    flex-wrap: wrap;
+  }
+
+  .detail-header h1 {
+    width: 100%;
+  }
+
+  .step-card {
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-base);
+  }
+
+  .step-content h3 {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-section {
+    gap: var(--spacing-md);
+  }
+
+  .info-card {
+    padding: var(--spacing-md);
+  }
+
+  .step-card {
+    flex-direction: column;
+  }
+
+  .step-number {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-sm);
+  }
+
+  .requirement {
+    padding: var(--spacing-sm);
+  }
+}

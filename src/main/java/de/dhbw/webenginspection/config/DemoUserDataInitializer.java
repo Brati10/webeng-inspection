@@ -26,7 +26,7 @@ public class DemoUserDataInitializer {
         return args -> {
 
             if (userRepository.findByUsername("admin").isEmpty()) {
-                User admin = new User("admin", "Admin User", passwordEncoder.encode("admin123"), UserRole.ADMIN);
+                User admin = new User("admin", "Markus Müller", passwordEncoder.encode("admin123"), UserRole.ADMIN);
                 userRepository.save(admin);
                 log.info("Created demo admin user with username 'admin' and password 'admin123'");
             } else {
@@ -34,12 +34,21 @@ public class DemoUserDataInitializer {
             }
 
             if (userRepository.findByUsername("inspector").isEmpty()) {
-                User inspector = new User("inspector", "Demo Inspector", passwordEncoder.encode("inspector123"),
+                User inspector = new User("inspector", "Laura Schmidt", passwordEncoder.encode("inspector123"),
                         UserRole.INSPECTOR);
                 userRepository.save(inspector);
                 log.info("Created demo inspector user with username 'inspector' and password 'inspector123'");
             } else {
                 log.info("Demo inspector user already exists, skipping creation.");
+            }
+
+            if (userRepository.findByUsername("thomas.weber").isEmpty()) {
+                User inspector = new User("thomas.weber", "Thomas Weber", passwordEncoder.encode("inspector123"),
+                        UserRole.INSPECTOR);
+                userRepository.save(inspector);
+                log.info("Created demo inspector user with username 'thomas.weber' and password 'inspector123'");
+            } else {
+                log.info("Thomas Weber user already exists, skipping creation.");
             }
         };
     }

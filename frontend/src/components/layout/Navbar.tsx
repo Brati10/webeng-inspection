@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import "./Navbar.css";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -11,74 +12,54 @@ export default function Navbar() {
   };
 
   if (!isAuthenticated) {
-    return null; // Keine Navbar auf Login-Seite
+    return null;
   }
 
   return (
-    <nav
-      style={{
-        padding: "0.5rem 1rem",
-        borderBottom: "1px solid #ddd",
-        marginBottom: "1rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <div style={{ display: "flex", gap: "1.5rem" }}>
+    <nav className="navbar">
+      <div className="navbar-brand">
+        <h2 style={{ margin: 0, color: "var(--primary-darker)" }}>
+          Inspektionsverwaltung
+        </h2>
+      </div>
+
+      <div className="navbar-links">
         <NavLink
           to="/"
-          style={({ isActive }) => ({
-            textDecoration: isActive ? "underline" : "none",
-            fontWeight: isActive ? "bold" : "normal",
-            color: "#333",
-          })}
+          className={({ isActive }) =>
+            isActive ? "nav-link nav-link-active" : "nav-link"
+          }
         >
           Dashboard
         </NavLink>
 
         <NavLink
           to="/checklists"
-          style={({ isActive }) => ({
-            textDecoration: isActive ? "underline" : "none",
-            fontWeight: isActive ? "bold" : "normal",
-            color: "#333",
-          })}
+          className={({ isActive }) =>
+            isActive ? "nav-link nav-link-active" : "nav-link"
+          }
         >
-          Checklists
+          Checklisten
         </NavLink>
 
-        {/* Nur ADMIN sieht Inspections */}
         {user?.role === "ADMIN" && (
           <NavLink
             to="/inspections"
-            style={({ isActive }) => ({
-              textDecoration: isActive ? "underline" : "none",
-              fontWeight: isActive ? "bold" : "normal",
-              color: "#333",
-            })}
+            className={({ isActive }) =>
+              isActive ? "nav-link nav-link-active" : "nav-link"
+            }
           >
-            Inspections
+            Inspektionen
           </NavLink>
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <span style={{ fontSize: "0.9rem", color: "#666" }}>
-          {user?.displayName} <strong>({user?.role})</strong>
-        </span>
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "#dc3545",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "0.9rem",
-          }}
-        >
+      <div className="navbar-user">
+        <div className="user-info">
+          <span className="user-name">{user?.displayName}</span>
+          <span className="user-role">{user?.role}</span>
+        </div>
+        <button onClick={handleLogout} className="btn-danger btn-sm">
           Logout
         </button>
       </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import "./LoginPage.css";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -27,73 +28,64 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
-      <h1>Login</h1>
-
-      {error && (
-        <div
-          style={{
-            padding: "0.5rem",
-            marginBottom: "1rem",
-            backgroundColor: "#fee",
-            color: "#c00",
-            borderRadius: "4px",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="username">Benutzername:</label>
-          <br />
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-            required
-          />
+    <div className="login-container">
+      <div className="login-box">
+        <div className="login-header">
+          <h1>Inspektionsverwaltung</h1>
+          <p>Anmeldung erforderlich</p>
         </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="password">Passwort:</label>
-          <br />
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-            required
-          />
+        {error && <div className="alert alert-danger">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="username">Benutzername:</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="z.B. inspector"
+              required
+              autoFocus
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Passwort:</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Passwort eingeben"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="btn-primary btn-lg w-full"
+          >
+            {isLoading ? "Wird angemeldet..." : "Anmelden"}
+          </button>
+        </form>
+
+        <div className="login-demo">
+          <p className="demo-title">Demo-Zugänge:</p>
+          <div className="demo-credentials">
+            <div className="credential">
+              <strong>Inspector:</strong>
+              <span>inspector / inspector123</span>
+            </div>
+            <div className="credential">
+              <strong>Administrator:</strong>
+              <span>admin / admin123</span>
+            </div>
+          </div>
         </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: isLoading ? "not-allowed" : "pointer",
-            opacity: isLoading ? 0.6 : 1,
-          }}
-        >
-          {isLoading ? "Wird angemeldet..." : "Anmelden"}
-        </button>
-      </form>
-
-      <p style={{ marginTop: "1rem", fontSize: "0.9rem", color: "#666" }}>
-        Demo: inspector1 / password123 (INSPECTOR)
-        <br />
-        Demo: admin1 / password123 (ADMIN)
-      </p>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api/httpClient";
+import "./ChecklistDetailPage.css";
 
 interface ChecklistStep {
   id: number;
@@ -54,64 +55,63 @@ export default function ChecklistDetailPage() {
     fetchData();
   }, [checklistId]);
 
-  if (loading) return <p>Lädt Checkliste...</p>;
-  if (error) return <p>{error}</p>;
-  if (!checklist) return <p>Keine Daten gefunden.</p>;
+  if (loading) return <p className="text-muted">Lädt Checkliste...</p>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (!checklist) return <p className="text-muted">Keine Daten gefunden.</p>;
 
   return (
-    <div>
-      <h1>{checklist.name}</h1>
-      <p>
-        <strong>Standort:</strong> {checklist.plantName}
-      </p>
-      {checklist.recommendations && (
-        <p>
-          <strong>Empfehlungen:</strong>
-          <br />
-          {checklist.recommendations}
-        </p>
-      )}
+    <div className="checklist-detail">
+      <div className="detail-header">
+        <h1>{checklist.name}</h1>
+        <button
+          onClick={() => navigate(-1)}
+          className="btn-back"
+          title="Zurück zur vorherigen Seite"
+        >
+          ←
+        </button>
+      </div>
 
-      <hr />
+      <section className="detail-section">
+        <div className="info-card">
+          <div className="info-row">
+            <span className="info-label">Standort/Anlage:</span>
+            <span className="info-value">{checklist.plantName}</span>
+          </div>
+          {checklist.recommendations && (
+            <div className="info-row">
+              <span className="info-label">Empfehlungen:</span>
+              <p className="info-text">{checklist.recommendations}</p>
+            </div>
+          )}
+        </div>
+      </section>
 
-      <h2>Prüfschritte ({steps.length})</h2>
-      {steps.length === 0 ? (
-        <p>Für diese Checkliste sind noch keine Schritte vorhanden.</p>
-      ) : (
-        <ol>
-          {steps.map((step) => (
-            <li key={step.id} style={{ marginBottom: "1rem" }}>
-              <strong>{step.description}</strong>
-              {step.requirement && (
-                <p
-                  style={{
-                    margin: "0.25rem 0",
-                    fontSize: "0.9rem",
-                    color: "#666",
-                  }}
-                >
-                  Anforderung: {step.requirement}
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
-      )}
-
-      <hr />
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          padding: "0.5rem 1rem",
-          backgroundColor: "#6c757d",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-      >
-        Zurück
-      </button>
+      <section className="detail-section">
+        <h2>Prüfschritte ({steps.length})</h2>
+        {steps.length === 0 ? (
+          <p className="text-muted">
+            Für diese Checkliste sind noch keine Schritte vorhanden.
+          </p>
+        ) : (
+          <div className="steps-list">
+            {steps.map((step, index) => (
+              <div key={step.id} className="step-card card">
+                <div className="step-number">{index + 1}</div>
+                <div className="step-content">
+                  <h3>{step.description}</h3>
+                  {step.requirement && (
+                    <div className="requirement">
+                      <span className="req-label">Anforderung:</span>
+                      <p>{step.requirement}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

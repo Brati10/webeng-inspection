@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api/httpClient";
+import "./ChecklistCreatePage.css";
 
 interface ChecklistStep {
   description: string;
@@ -72,7 +73,6 @@ export default function ChecklistCreatePage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Checklist erstellen
       const checklistRes = await api.post("/checklists", {
         name: formData.name,
         plantName: formData.plantName,
@@ -82,14 +82,12 @@ export default function ChecklistCreatePage() {
 
       const checklistId = checklistRes.data.id;
 
-      // 2. Steps hinzufügen (wenn vorhanden)
       if (formData.steps.length > 0) {
         for (const step of formData.steps) {
           await api.post(`/checklists/${checklistId}/steps`, step);
         }
       }
 
-      // Erfolg - zur Detail-Seite navigieren
       navigate(`/checklists/${checklistId}`);
     } catch (err: any) {
       console.error("Error creating checklist:", err);
@@ -102,210 +100,144 @@ export default function ChecklistCreatePage() {
   };
 
   return (
-    <div style={{ maxWidth: "800px" }}>
-      <h1>Neue Checkliste erstellen</h1>
-
-      {error && (
-        <div
-          style={{
-            padding: "0.5rem",
-            marginBottom: "1rem",
-            backgroundColor: "#fee",
-            color: "#c00",
-            borderRadius: "4px",
-          }}
+    <div className="checklist-create">
+      <div className="detail-header">
+        <h1>Neue Checkliste erstellen</h1>
+        <button
+          onClick={() => navigate("/checklists")}
+          className="btn-back"
+          title="Abbrechen"
         >
-          {error}
-        </div>
-      )}
+          ✕
+        </button>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        {/* Basis-Informationen */}
-        <fieldset
-          style={{
-            marginBottom: "2rem",
-            padding: "1rem",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-          }}
-        >
-          <legend style={{ fontWeight: "bold" }}>Basis-Informationen</legend>
+      {error && <div className="alert alert-danger">{error}</div>}
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="name">Name der Checkliste:</label>
-            <br />
-            <input
-              id="name"
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-              required
-            />
+      <form onSubmit={handleSubmit} className="create-form">
+        {/* ===== SECTION 1: BASIS-INFORMATIONEN ===== */}
+        <section className="form-section">
+          <h2>Basis-Informationen</h2>
+          <div className="section-content">
+            <div className="form-group">
+              <label htmlFor="name">Name der Checkliste *</label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="z.B. Sicherheitsprüfung Lager"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="plantName">Standort/Anlage</label>
+              <input
+                id="plantName"
+                type="text"
+                name="plantName"
+                value={formData.plantName}
+                onChange={handleInputChange}
+                placeholder="z.B. Lagerbereich A"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="recommendations">Empfehlungen</label>
+              <textarea
+                id="recommendations"
+                name="recommendations"
+                value={formData.recommendations}
+                onChange={handleInputChange}
+                placeholder="Zusätzliche Hinweise und Empfehlungen..."
+              />
+            </div>
           </div>
+        </section>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="plantName">Standort/Anlage:</label>
-            <br />
-            <input
-              id="plantName"
-              type="text"
-              name="plantName"
-              value={formData.plantName}
-              onChange={handleInputChange}
-              style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-            />
+        {/* ===== SECTION 2: PRÜFSCHRITTE ===== */}
+        <section className="form-section">
+          <div className="section-header">
+            <h2>Prüfschritte</h2>
+            <span className="step-count">{formData.steps.length} Schritte</span>
           </div>
-
-          <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="recommendations">Empfehlungen:</label>
-            <br />
-            <textarea
-              id="recommendations"
-              name="recommendations"
-              value={formData.recommendations}
-              onChange={handleInputChange}
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                marginTop: "0.25rem",
-                minHeight: "100px",
-              }}
-            />
-          </div>
-        </fieldset>
-
-        {/* Prüfschritte */}
-        <fieldset
-          style={{
-            marginBottom: "2rem",
-            padding: "1rem",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-          }}
-        >
-          <legend style={{ fontWeight: "bold" }}>Prüfschritte</legend>
 
           {formData.steps.length === 0 ? (
-            <p style={{ color: "#999" }}>Keine Schritte hinzugefügt</p>
+            <div className="empty-steps">
+              <p>Noch keine Prüfschritte hinzugefügt</p>
+            </div>
           ) : (
-            <div>
+            <div className="steps-container">
               {formData.steps.map((step, index) => (
-                <div
-                  key={index}
-                  style={{
-                    padding: "1rem",
-                    marginBottom: "1rem",
-                    backgroundColor: "#f9f9f9",
-                    border: "1px solid #eee",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <div style={{ marginBottom: "0.5rem", fontWeight: "bold" }}>
-                    Schritt {index + 1}
+                <div key={index} className="step-form-card">
+                  <div className="step-form-header">
+                    <span className="step-number">{index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeStep(index)}
+                      className="btn-remove"
+                      title="Schritt entfernen"
+                    >
+                      ✕
+                    </button>
                   </div>
 
-                  <div style={{ marginBottom: "0.5rem" }}>
-                    <label>Beschreibung:</label>
-                    <br />
-                    <input
-                      type="text"
-                      value={step.description}
-                      onChange={(e) =>
-                        updateStep(index, "description", e.target.value)
-                      }
-                      style={{
-                        width: "100%",
-                        padding: "0.5rem",
-                        marginTop: "0.25rem",
-                      }}
-                      required
-                    />
-                  </div>
+                  <div className="step-form-content">
+                    <div className="form-group">
+                      <label htmlFor={`description-${index}`}>
+                        Beschreibung *
+                      </label>
+                      <input
+                        id={`description-${index}`}
+                        type="text"
+                        value={step.description}
+                        onChange={(e) =>
+                          updateStep(index, "description", e.target.value)
+                        }
+                        placeholder="Beschreibung des Prüfschrittes"
+                        required
+                      />
+                    </div>
 
-                  <div style={{ marginBottom: "0.5rem" }}>
-                    <label>Anforderung:</label>
-                    <br />
-                    <textarea
-                      value={step.requirement}
-                      onChange={(e) =>
-                        updateStep(index, "requirement", e.target.value)
-                      }
-                      style={{
-                        width: "100%",
-                        padding: "0.5rem",
-                        marginTop: "0.25rem",
-                        minHeight: "60px",
-                      }}
-                    />
+                    <div className="form-group">
+                      <label htmlFor={`requirement-${index}`}>
+                        Anforderung
+                      </label>
+                      <textarea
+                        id={`requirement-${index}`}
+                        value={step.requirement}
+                        onChange={(e) =>
+                          updateStep(index, "requirement", e.target.value)
+                        }
+                        placeholder="Welche Anforderungen müssen erfüllt sein?"
+                      />
+                    </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => removeStep(index)}
-                    style={{
-                      padding: "0.25rem 0.75rem",
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Schritt entfernen
-                  </button>
                 </div>
               ))}
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={addStep}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#17a2b8",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
+          <button type="button" onClick={addStep} className="btn-accent">
             + Schritt hinzufügen
           </button>
-        </fieldset>
+        </section>
 
-        {/* Submit Buttons */}
-        <div style={{ display: "flex", gap: "1rem" }}>
+        {/* ===== FORM ACTIONS ===== */}
+        <div className="form-actions">
           <button
             type="submit"
-            disabled={isSubmitting}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-              opacity: isSubmitting ? 0.6 : 1,
-            }}
+            disabled={isSubmitting || !formData.name}
+            className="btn-primary btn-lg"
           >
             {isSubmitting ? "Wird erstellt..." : "Checkliste erstellen"}
           </button>
-
           <button
             type="button"
             onClick={() => navigate("/checklists")}
-            style={{
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#6c757d",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="btn-secondary btn-lg"
           >
             Abbrechen
           </button>

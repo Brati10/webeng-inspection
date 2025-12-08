@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api/httpClient";
+import "./InspectionCreatePage.css";
 
 interface Checklist {
   id: number;
@@ -82,124 +83,121 @@ export default function InspectionCreatePage() {
     }
   };
 
-  if (loading) return <p>Lädt Formulardaten...</p>;
+  if (loading) return <p className="text-muted">Lädt Formulardaten...</p>;
 
   return (
-    <div style={{ maxWidth: "600px" }}>
-      <h1>Neue Inspection anlegen</h1>
-
-      {error && (
-        <div
-          style={{
-            padding: "0.5rem",
-            marginBottom: "1rem",
-            backgroundColor: "#fee",
-            color: "#c00",
-            borderRadius: "4px",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="title">Titel:</label>
-          <br />
-          <input
-            id="title"
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="checklistId">Checkliste:</label>
-          <br />
-          <select
-            id="checklistId"
-            name="checklistId"
-            value={formData.checklistId}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-            required
-          >
-            <option value="">-- Wähle eine Checkliste --</option>
-            {checklists.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="assignedInspectorId">
-            Verantwortlicher Inspector:
-          </label>
-          <br />
-          <select
-            id="assignedInspectorId"
-            name="assignedInspectorId"
-            value={formData.assignedInspectorId}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-            required
-          >
-            <option value="">-- Wähle einen Inspector --</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.displayName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="plantName">Anlage:</label>
-          <br />
-          <input
-            id="plantName"
-            type="text"
-            name="plantName"
-            value={formData.plantName}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="plannedDate">Geplantes Datum:</label>
-          <br />
-          <input
-            id="plannedDate"
-            type="datetime-local"
-            name="plannedDate"
-            value={formData.plannedDate}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
-          />
-        </div>
-
+    <div className="inspection-create">
+      <div className="detail-header">
+        <h1>Neue Inspection anlegen</h1>
         <button
-          type="submit"
-          disabled={isSubmitting}
-          style={{
-            padding: "0.75rem 1.5rem",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: isSubmitting ? "not-allowed" : "pointer",
-            opacity: isSubmitting ? 0.6 : 1,
-          }}
+          onClick={() => navigate("/inspections")}
+          className="btn-back"
+          title="Abbrechen"
         >
-          {isSubmitting ? "Wird erstellt..." : "Erstellen"}
+          ✕
         </button>
+      </div>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      <form onSubmit={handleSubmit} className="create-form">
+        <section className="form-section">
+          <h2>Inspection-Details</h2>
+          <div className="section-content">
+            <div className="form-group">
+              <label htmlFor="title">Titel *</label>
+              <input
+                id="title"
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="z.B. Sicherheitsprüfung Mai 2025"
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="checklistId">Checkliste *</label>
+                <select
+                  id="checklistId"
+                  name="checklistId"
+                  value={formData.checklistId}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">-- Checkliste wählen --</option>
+                  {checklists.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="assignedInspectorId">
+                  Verantwortlicher Inspector *
+                </label>
+                <select
+                  id="assignedInspectorId"
+                  name="assignedInspectorId"
+                  value={formData.assignedInspectorId}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">-- Inspector wählen --</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.displayName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="plantName">Anlage</label>
+              <input
+                id="plantName"
+                type="text"
+                name="plantName"
+                value={formData.plantName}
+                onChange={handleChange}
+                placeholder="z.B. Lagerbereich A"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="plannedDate">Geplantes Datum</label>
+              <input
+                id="plannedDate"
+                type="datetime-local"
+                name="plannedDate"
+                value={formData.plannedDate}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className="form-actions">
+          <button
+            type="submit"
+            disabled={isSubmitting || !formData.title || !formData.checklistId}
+            className="btn-primary btn-lg"
+          >
+            {isSubmitting ? "Wird erstellt..." : "Inspection erstellen"}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/inspections")}
+            className="btn-secondary btn-lg"
+          >
+            Abbrechen
+          </button>
+        </div>
       </form>
     </div>
   );

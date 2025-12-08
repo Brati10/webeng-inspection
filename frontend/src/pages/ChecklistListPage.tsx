@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api/httpClient";
 import { useAuth } from "../context/useAuth";
+import "./ChecklistListPage.css";
 
 interface Checklist {
   id: number;
@@ -46,9 +47,7 @@ export default function ChecklistListPage() {
     } catch (err: any) {
       console.error(err);
 
-      // Checklist ist in Gebrauch (409 Conflict)
       if (err.response?.status === 409) {
-        // Zahl aus der Fehlermeldung extrahieren
         const message = err.response.data.message || "";
         const match = message.match(/\d+/);
         const count = match ? parseInt(match[0], 10) : 0;
@@ -66,82 +65,63 @@ export default function ChecklistListPage() {
     }
   };
 
-  if (loading) return <p>Lädt Checklisten...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="text-muted">Lädt Checklisten...</p>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
-    <div>
-      <h1>Checklisten</h1>
-
-      {user?.role === "ADMIN" && (
-        <Link to="/checklists/create">
-          <button
-            style={{
-              marginBottom: "1rem",
-              padding: "0.5rem 1rem",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Neue Checklist
-          </button>
-        </Link>
-      )}
+    <div className="checklist-list">
+      <div className="page-header">
+        <h1>Checklisten</h1>
+        {user?.role === "ADMIN" && (
+          <Link to="/checklists/create" className="btn-primary">
+            + Neue Checklist
+          </Link>
+        )}
+      </div>
 
       {checklists.length === 0 ? (
-        <p>Keine Checklisten vorhanden.</p>
+        <div className="empty-state">
+          <p>Keine Checklisten vorhanden.</p>
+        </div>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr
-              style={{
-                backgroundColor: "#f5f5f5",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Name</th>
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Standort</th>
-              <th style={{ padding: "0.5rem", textAlign: "left" }}>Aktion</th>
-            </tr>
-          </thead>
-          <tbody>
-            {checklists.map((checklist) => (
-              <tr key={checklist.id} style={{ borderBottom: "1px solid #ddd" }}>
-                <td style={{ padding: "0.5rem" }}>{checklist.name}</td>
-                <td style={{ padding: "0.5rem" }}>{checklist.plantName}</td>
-                <td style={{ padding: "0.5rem" }}>
-                  <Link
-                    to={`/checklists/${checklist.id}`}
-                    style={{ color: "#007bff", marginRight: "1rem" }}
+        <div className="checklist-grid">
+          {checklists.map((checklist) => (
+            <div key={checklist.id} className="checklist-card card">
+              <div className="card-header">
+                <h3>{checklist.name}</h3>
+              </div>
+              <div className="card-body">
+                <div className="info-group">
+                  <span className="info-label">Standort:</span>
+                  <span className="info-value">{checklist.plantName}</span>
+                </div>
+                {checklist.recommendations && (
+                  <div className="info-group">
+                    <span className="info-label">Empfehlungen:</span>
+                    <p className="info-text">{checklist.recommendations}</p>
+                  </div>
+                )}
+              </div>
+              <div className="card-footer">
+                <Link
+                  to={`/checklists/${checklist.id}`}
+                  className="btn-primary btn-sm"
+                >
+                  Anzeigen
+                </Link>
+                {user?.role === "ADMIN" && (
+                  <button
+                    onClick={() => handleDelete(checklist.id, checklist.name)}
+                    disabled={deleting === checklist.id}
+                    className="btn-danger btn-sm"
                   >
-                    Anzeigen
-                  </Link>
-                  {user?.role === "ADMIN" && (
-                    <button
-                      onClick={() => handleDelete(checklist.id, checklist.name)}
-                      disabled={deleting === checklist.id}
-                      style={{
-                        padding: "0.25rem 0.75rem",
-                        backgroundColor:
-                          deleting === checklist.id ? "#ccc" : "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor:
-                          deleting === checklist.id ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      {deleting === checklist.id ? "Löschen..." : "Löschen"}
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    {deleting === checklist.id ? "Löschen..." : "Löschen"}
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

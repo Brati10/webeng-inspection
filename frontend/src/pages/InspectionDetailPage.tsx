@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api/httpClient";
+import "./InspectionDetailPage.css";
 
 interface InspectionStep {
   id: number;
@@ -47,22 +48,18 @@ export default function InspectionDetailPage() {
       }
 
       try {
-        // Inspection laden
         const inspectionRes = await api.get(`/inspections/${inspectionId}`);
         setInspection(inspectionRes.data);
 
-        // Steps laden - nur der korrekte Endpoint
         let stepsData: InspectionStep[] = [];
         try {
           const stepsRes = await api.get(`/inspections/${inspectionId}/steps`);
           stepsData = stepsRes.data;
         } catch (stepErr) {
           console.warn("Failed to fetch steps:", stepErr);
-          // Keine Steps oder Fehler - fortfahren mit leerer Liste
         }
 
         setSteps(stepsData);
-        // Initialisiere editingComments mit bestehenden Kommentaren
         const commentsMap = new Map<number, string>();
         stepsData.forEach((step) => {
           commentsMap.set(step.id, step.comment || "");
@@ -173,163 +170,133 @@ export default function InspectionDetailPage() {
     }
   };
 
-  if (loading) return <p>Lädt Inspection...</p>;
-  if (error) return <p>{error}</p>;
-  if (!inspection) return <p>Keine Daten gefunden</p>;
+  if (loading) return <p className="text-muted">Lädt Inspection...</p>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (!inspection) return <p className="text-muted">Keine Daten gefunden</p>;
 
   return (
-    <div>
-      <h1>{inspection.title}</h1>
-      <p>
-        <strong>Anlage:</strong> {inspection.plantName}
-      </p>
-      <p>
-        <strong>Status:</strong>{" "}
-        <select
-          value={inspection.status}
-          onChange={(e) => updateInspectionStatus(e.target.value)}
-          disabled={isUpdating}
+    <div className="inspection-detail">
+      <div className="detail-header">
+        <h1>{inspection.title}</h1>
+        <button
+          onClick={() => navigate(-1)}
+          className="btn-back"
+          title="Zurück"
         >
-          <option value="PLANNED">Geplant</option>
-          <option value="IN_PROGRESS">In Bearbeitung</option>
-          <option value="COMPLETED">Abgeschlossen</option>
-        </select>
-      </p>
+          ←
+        </button>
+      </div>
 
-      <hr />
-
-      <h2>Prüfschritte</h2>
-      {steps.length === 0 ? (
-        <p>Keine Steps vorhanden</p>
-      ) : (
-        <div>
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              style={{
-                padding: "1rem",
-                marginBottom: "1rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-              }}
+      <section className="detail-section">
+        <div className="info-card">
+          <div className="info-row">
+            <span className="info-label">Anlage:</span>
+            <span className="info-value">{inspection.plantName}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Status:</span>
+            <select
+              value={inspection.status}
+              onChange={(e) => updateInspectionStatus(e.target.value)}
+              disabled={isUpdating}
+              className="status-select"
             >
-              <p>
-                <strong>{step.checklistStep?.description}</strong>
-              </p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <select
-                  value={step.status}
-                  onChange={(e) => updateStepStatus(step.id, e.target.value)}
-                  disabled={isUpdating}
-                >
-                  <option value="PASSED">Erfüllt</option>
-                  <option value="FAILED">Nicht erfüllt</option>
-                  <option value="NOT_APPLICABLE">N.A.</option>
-                </select>
-              </p>
-              <p>
-                <strong>Kommentar:</strong>
-                <br />
-                <textarea
-                  value={editingComments.get(step.id) || ""}
-                  onChange={(e) => {
-                    setEditingComments(
-                      new Map(editingComments).set(step.id, e.target.value)
-                    );
-                  }}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    marginTop: "0.25rem",
-                    minHeight: "80px",
-                  }}
-                />
-                <button
-                  onClick={() => updateStepComment(step.id)}
-                  disabled={savingCommentStepId === step.id}
-                  style={{
-                    marginTop: "0.5rem",
-                    padding: "0.5rem 1rem",
-                    backgroundColor:
-                      savingCommentStepId === step.id ? "#ccc" : "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor:
-                      savingCommentStepId === step.id
-                        ? "not-allowed"
-                        : "pointer",
-                  }}
-                >
-                  {savingCommentStepId === step.id
-                    ? "Speichert..."
-                    : "Kommentar speichern"}
-                </button>
-              </p>
-
-              <div style={{ marginTop: "1rem" }}>
-                <strong>Foto:</strong>
-                <div style={{ marginTop: "0.5rem" }}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        uploadPhoto(step.id, file);
-                      }
-                    }}
-                    disabled={uploadingPhotoStepId === step.id}
-                    style={{ marginBottom: "0.5rem" }}
-                  />
-                  {uploadingPhotoStepId === step.id && (
-                    <p style={{ color: "#007bff", fontSize: "0.9rem" }}>
-                      Foto wird hochgeladen...
-                    </p>
-                  )}
-                </div>
-                {step.photoPath && (
-                  <div
-                    style={{
-                      marginTop: "0.5rem",
-                      border: "1px solid #ddd",
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      display: "inline-block",
-                    }}
-                  >
-                    <img
-                      src={`${BACKEND_URL}/api/files/${step.photoPath}`}
-                      alt="Step photo"
-                      style={{
-                        maxWidth: "300px",
-                        maxHeight: "300px",
-                        borderRadius: "4px",
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+              <option value="PLANNED">Geplant</option>
+              <option value="IN_PROGRESS">In Bearbeitung</option>
+              <option value="COMPLETED">Abgeschlossen</option>
+            </select>
+          </div>
         </div>
-      )}
+      </section>
 
-      <hr />
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          padding: "0.5rem 1rem",
-          backgroundColor: "#6c757d",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-      >
-        Zurück
-      </button>
+      <section className="detail-section">
+        <h2>Prüfschritte ({steps.length})</h2>
+        {steps.length === 0 ? (
+          <p className="text-muted">Keine Steps vorhanden</p>
+        ) : (
+          <div className="steps-list">
+            {steps.map((step) => (
+              <div key={step.id} className="step-detail-card">
+                <div className="step-header">
+                  <h3>{step.checklistStep?.description}</h3>
+                  <select
+                    value={step.status}
+                    onChange={(e) => updateStepStatus(step.id, e.target.value)}
+                    disabled={isUpdating}
+                    className={`status-badge status-${step.status.toLowerCase()}`}
+                  >
+                    <option value="PASSED">Erfüllt</option>
+                    <option value="FAILED">Nicht erfüllt</option>
+                    <option value="NOT_APPLICABLE">N.A.</option>
+                  </select>
+                </div>
+
+                <div className="step-content">
+                  <div className="comment-section">
+                    <label htmlFor={`comment-${step.id}`}>Kommentar:</label>
+                    <textarea
+                      id={`comment-${step.id}`}
+                      value={editingComments.get(step.id) || ""}
+                      onChange={(e) => {
+                        setEditingComments(
+                          new Map(editingComments).set(step.id, e.target.value)
+                        );
+                      }}
+                      className="comment-textarea"
+                      placeholder="Notizen zu diesem Schritt..."
+                    />
+                    <button
+                      onClick={() => updateStepComment(step.id)}
+                      disabled={savingCommentStepId === step.id}
+                      className="btn-primary btn-sm"
+                    >
+                      {savingCommentStepId === step.id
+                        ? "Speichert..."
+                        : "Kommentar speichern"}
+                    </button>
+                  </div>
+
+                  <div className="photo-section">
+                    <label htmlFor={`photo-${step.id}`}>Foto hochladen:</label>
+                    <div className="photo-upload">
+                      <input
+                        id={`photo-${step.id}`}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            uploadPhoto(step.id, file);
+                          }
+                        }}
+                        disabled={uploadingPhotoStepId === step.id}
+                      />
+                      {uploadingPhotoStepId === step.id && (
+                        <p className="uploading">Foto wird hochgeladen...</p>
+                      )}
+                    </div>
+
+                    {step.photoPath && (
+                      <div className="photo-display">
+                        <img
+                          src={`${BACKEND_URL}/api/files/${step.photoPath}`}
+                          alt="Step photo"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <div className="action-buttons">
+        <button onClick={() => navigate(-1)} className="btn-secondary btn-lg">
+          Zurück
+        </button>
+      </div>
     </div>
   );
 }
