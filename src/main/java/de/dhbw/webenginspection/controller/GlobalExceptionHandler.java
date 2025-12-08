@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -57,6 +58,32 @@ public class GlobalExceptionHandler {
                                 .map(fe -> new FieldValidationError(fe.getField(), fe.getDefaultMessage())).toList();
 
                 error.setFieldErrors(fieldErrors);
+
+                return ResponseEntity.status(status).body(error);
+        }
+
+        /**
+         * Behandelt {@link MissingServletRequestParameterException}, wenn ein
+         * erforderlicher Request-Parameter fehlt.
+         *
+         * @param ex die ausgelöste
+         * {@link MissingServletRequestParameterException}
+         * @param request das aktuelle {@link HttpServletRequest}
+         * @return eine Response mit HTTP-Status {@code 400 Bad Request} und
+         * einer {@link ErrorResponse}, die anzeigt, welcher Parameter fehlt
+         */
+        @ExceptionHandler(MissingServletRequestParameterException.class)
+        public ResponseEntity<ErrorResponse> handleMissingParameter(MissingServletRequestParameterException ex,
+                        HttpServletRequest request) {
+
+                log.warn("Missing required parameter at {}: {}", request.getRequestURI(), ex.getParameterName());
+
+                HttpStatus status = HttpStatus.BAD_REQUEST;
+
+                String message = "Required parameter '" + ex.getParameterName() + "' is missing";
+
+                ErrorResponse error = new ErrorResponse(status.value(), status.getReasonPhrase(), message,
+                                request.getRequestURI());
 
                 return ResponseEntity.status(status).body(error);
         }

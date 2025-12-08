@@ -32,28 +32,30 @@ public class UserService {
     }
 
     /**
-     * Legt einen neuen Benutzer mit gehashtem Passwort an.
+     * Legt einen neuen Benutzer mit gehashtem Passwort an oder gibt den
+     * existierenden zurück. Diese Methode ist idempotent - wird mit denselben
+     * Parametern aufgerufen, wird immer der gleiche User zurückgegeben.
      *
      * @param username eindeutiger Benutzername
      * @param displayName Anzeigename des Benutzers
      * @param rawPassword unverschlüsseltes Passwort (wird gehashed)
      * @param role {@link UserRole} des Benutzers
-     * @return der neu erstellte {@link User}
-     * @throws IllegalArgumentException wenn der Username bereits vergeben ist
+     * @return der erstellte oder bereits existierende {@link User}
      */
     public User createUser(String username, String displayName, String rawPassword, UserRole role) {
-        log.info("Creating new user with username {}", username);
+        log.info("Creating or retrieving user with username {}", username);
 
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("Username '" + username + "' is already taken");
+        Optional<User> existing = userRepository.findByUsername(username);
+        if (existing.isPresent()) {
+            log.info("User with username {} already exists, returning existing user", username);
+            return existing.get();
         }
 
         String passwordHash = passwordEncoder.encode(rawPassword);
-
         User user = new User(username, displayName, passwordHash, role);
         User saved = userRepository.save(user);
-        log.info("Created user with id {}", saved.getId());
-        
+        log.info("Created new user with id {}", saved.getId());
+
         return saved;
     }
 
@@ -72,7 +74,8 @@ public class UserService {
      * Sucht einen Benutzer anhand der ID.
      *
      * @param id die eindeutige Benutzer-ID
-     * @return ein Optional mit dem gefundenen {@link User}, oder leer wenn nicht existiert
+     * @return ein Optional mit dem gefundenen {@link User}, oder leer wenn
+     * nicht existiert
      */
     @Transactional(readOnly = true)
     public Optional<User> getUserById(Long id) {
@@ -84,7 +87,8 @@ public class UserService {
      * Sucht einen Benutzer anhand des Usernamens.
      *
      * @param username der eindeutige Benutzername
-     * @return ein Optional mit dem gefundenen {@link User}, oder leer wenn nicht existiert
+     * @return ein Optional mit dem gefundenen {@link User}, oder leer wenn
+     * nicht existiert
      */
     @Transactional(readOnly = true)
     public Optional<User> getUserByUsername(String username) {
@@ -98,12 +102,13 @@ public class UserService {
      * @param username der Benutzername
      * @param rawPassword das unverschlüsselte Passwort
      * @return der authentifizierte {@link User}
-     * @throws IllegalArgumentException wenn Username oder Passwort ungültig sind
+     * @throws IllegalArgumentException wenn Username oder Passwort ungültig
+     * sind
      */
     @Transactional(readOnly = true)
     public User validateLogin(String username, String rawPassword) {
         log.info("Validating login for user {}", username);
-        
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
