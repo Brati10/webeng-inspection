@@ -1,0 +1,815 @@
+/* ============================================
+   MODAL OVERLAY
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn var(--transition-fast) ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   MODAL CONTAINER
+   ============================================ */
+
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn var(--transition-fast) ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, -48%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   MODAL HEADER
+   ============================================ */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--primary-darker);
+  font-size: var(--font-size-2xl);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: var(--font-size-2xl);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  color: var(--primary);
+  transform: scale(1.2);
+}
+
+/* ============================================
+   MODAL CONTENT (SCROLLABLE)
+   ============================================ */
+
+.modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  padding-right: calc(var(--spacing-lg) - 8px); /* Account for scrollbar */
+}
+
+/* Scrollbar styling */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: var(--gray-50);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ============================================
+   REPORT SECTIONS
+   ============================================ */
+
+.report-section {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.report-section:last-of-type {
+  border-bottom: none;
+}
+
+.report-section h3 {
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--primary-darker);
+  font-size: var(--font-size-lg);
+  border-bottom: 2px solid var(--primary-lighter);
+  padding-bottom: var(--spacing-md);
+}
+
+/* Report Grid */
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.report-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.report-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.report-value {
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+/* ============================================
+   REPORT SUMMARY
+   ============================================ */
+
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  background-color: var(--gray-50);
+}
+
+.summary-total {
+  background-color: rgba(74, 123, 167, 0.1);
+  border: 2px solid var(--primary);
+}
+
+.summary-passed {
+  background-color: rgba(39, 174, 96, 0.1);
+  border: 2px solid var(--success);
+}
+
+.summary-failed {
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 2px solid var(--danger);
+}
+
+.summary-na {
+  background-color: rgba(108, 117, 125, 0.1);
+  border: 2px solid #6c757d;
+}
+
+.summary-number {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-dark);
+}
+
+.summary-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.report-percentage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--primary-lighter);
+  border-radius: var(--border-radius);
+  color: var(--text-inverse);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ============================================
+   REPORT STEPS
+   ============================================ */
+
+.report-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.report-step {
+  border-left: 4px solid var(--primary-light);
+  padding: var(--spacing-lg);
+  background-color: var(--gray-50);
+  border-radius: var(--border-radius);
+}
+
+.report-step-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.step-number {
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  font-size: var(--font-size-lg);
+  min-width: 30px;
+}
+
+.step-description {
+  flex: 1;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  min-width: 200px;
+}
+
+.step-status {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 20px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  min-width: 90px;
+}
+
+.status-badge-passed {
+  background-color: var(--success-light);
+  color: #155724;
+}
+
+.status-badge-failed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-badge-na {
+  background-color: #e7e7e7;
+  color: #333;
+}
+
+/* Step Comment */
+.report-step-comment {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.comment-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.report-step-comment p {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Step Photo */
+.report-step-photo {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.photo-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.report-step-photo img {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-light);
+}
+
+/* ============================================
+   GENERAL COMMENT
+   ============================================ */
+
+.report-general-comment {
+  color: var(--text-primary);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+  padding: var(--spacing-md);
+  background-color: var(--gray-50);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--primary);
+}
+
+/* ============================================
+   REPORT FOOTER
+   ============================================ */
+
+.report-footer {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  padding-top: var(--spacing-lg);
+  border-bottom: none;
+}
+
+.report-footer p {
+  margin: 0;
+}
+
+/* ============================================
+   MODAL FOOTER
+   ============================================ */
+
+.modal-footer {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  border-top: 2px solid var(--border-light);
+  background-color: var(--gray-50);
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
+.modal-footer button {
+  flex: 0;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  /* Reset all styles */
+  * {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide root container and everything by default */
+  #root {
+    display: block !important;
+  }
+
+  #root > * {
+    display: none !important;
+  }
+
+  /* Show modal overlay and container */
+  #root > .modal-overlay,
+  #root > .modal-container {
+    display: block !important;
+  }
+
+  /* Overlay should not be visible in print */
+  .modal-overlay {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    background: transparent !important;
+    z-index: auto !important;
+    animation: none !important;
+  }
+
+  /* Modal container fills page */
+  .modal-container {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: white !important;
+    display: flex !important;
+    flex-direction: column !important;
+    animation: none !important;
+    z-index: auto !important;
+  }
+
+  .modal-container * {
+    display: inherit !important;
+  }
+
+  /* Modal Header */
+  .modal-header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0.8cm !important;
+    margin: 0 !important;
+    border-bottom: 2px solid black !important;
+    background: white !important;
+    flex-shrink: 0 !important;
+  }
+
+  .modal-header h2 {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    color: black !important;
+    flex: 1 !important;
+  }
+
+  .modal-close,
+  .modal-footer {
+    display: none !important;
+  }
+
+  /* Modal Content */
+  .modal-content {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0.8cm !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  .modal-content * {
+    display: inherit !important;
+  }
+
+  /* Report Sections */
+  .report-section {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 0.8cm 0 !important;
+    padding: 0 0 0.5cm 0 !important;
+    border: none !important;
+    page-break-inside: avoid !important;
+  }
+
+  .report-section h3 {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 0.5cm 0 !important;
+    padding: 0 0 0.3cm 0 !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    color: black !important;
+    border-bottom: 2px solid black !important;
+  }
+
+  .report-grid {
+    display: grid !important;
+    width: 100% !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5cm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .report-item {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .report-label {
+    display: block !important;
+    font-weight: bold !important;
+    font-size: 9pt !important;
+    color: black !important;
+    margin: 0 0 2pt 0 !important;
+  }
+
+  .report-value {
+    display: block !important;
+    font-size: 10pt !important;
+    color: black !important;
+    margin: 0 !important;
+  }
+
+  .report-summary {
+    display: grid !important;
+    width: 100% !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.3cm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .summary-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0.4cm !important;
+    margin: 0 !important;
+    border: 1px solid black !important;
+    text-align: center !important;
+    background: white !important;
+  }
+
+  .summary-number {
+    display: block !important;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    color: black !important;
+    margin: 0 0 2pt 0 !important;
+  }
+
+  .summary-label {
+    display: block !important;
+    font-size: 8pt !important;
+    font-weight: bold !important;
+    color: black !important;
+    margin: 0 !important;
+  }
+
+  .report-percentage {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0.4cm !important;
+    margin: 0 !important;
+    background: #f0f0f0 !important;
+    border: 1px solid black !important;
+    font-weight: bold !important;
+    font-size: 10pt !important;
+    color: black !important;
+  }
+
+  .report-steps {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .report-step {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 0.5cm 0 !important;
+    padding: 0.4cm !important;
+    border-left: 3px solid black !important;
+    background: white !important;
+    page-break-inside: avoid !important;
+  }
+
+  .report-step-header {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 0.3cm 0 !important;
+  }
+
+  .step-number {
+    display: inline !important;
+    font-weight: bold !important;
+    color: black !important;
+    font-size: 10pt !important;
+    margin: 0 3pt 0 0 !important;
+  }
+
+  .step-description {
+    display: inline !important;
+    color: black !important;
+    font-size: 10pt !important;
+    margin: 0 5pt 0 0 !important;
+  }
+
+  .step-status {
+    display: inline !important;
+    padding: 2pt 4pt !important;
+    border: 1px solid black !important;
+    font-size: 8pt !important;
+    font-weight: bold !important;
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+  }
+
+  .report-step-comment {
+    display: block !important;
+    width: 100% !important;
+    margin: 0.3cm 0 0 0 !important;
+    padding: 0.3cm 0 0 0 !important;
+    border-top: 1px solid #ccc !important;
+  }
+
+  .comment-label {
+    display: block !important;
+    font-weight: bold !important;
+    font-size: 9pt !important;
+    color: black !important;
+    margin: 0 0 2pt 0 !important;
+  }
+
+  .report-step-comment p {
+    display: block !important;
+    width: 100% !important;
+    font-size: 9pt !important;
+    color: black !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+  }
+
+  .report-step-photo {
+    display: block !important;
+    width: 100% !important;
+    margin: 0.3cm 0 0 0 !important;
+    padding: 0.3cm 0 0 0 !important;
+    border-top: 1px solid #ccc !important;
+  }
+
+  .photo-label {
+    display: block !important;
+    font-weight: bold !important;
+    font-size: 9pt !important;
+    color: black !important;
+    margin: 0 0 3pt 0 !important;
+  }
+
+  .report-step-photo img {
+    display: block !important;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: 10cm !important;
+    border: 1px solid black !important;
+    margin: 0 !important;
+  }
+
+  .report-general-comment {
+    display: block !important;
+    width: 100% !important;
+    padding: 0.4cm !important;
+    margin: 0 !important;
+    border-left: 3px solid black !important;
+    font-size: 10pt !important;
+    color: black !important;
+    background: white !important;
+    page-break-inside: avoid !important;
+  }
+
+  .report-footer {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    font-size: 8pt !important;
+    color: black !important;
+    padding: 0.5cm 0 0 0 !important;
+    margin: 0.8cm 0 0 0 !important;
+    border: none !important;
+  }
+
+  .report-footer p {
+    display: block !important;
+    margin: 0 !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .modal-container {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: var(--spacing-md);
+  }
+
+  .modal-content {
+    padding: var(--spacing-md);
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .step-description {
+    min-width: 150px;
+  }
+
+  .report-step-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .step-status {
+    width: 100%;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .report-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .report-step-header {
+    gap: var(--spacing-sm);
+  }
+
+  .step-number {
+    flex-shrink: 0;
+  }
+
+  .step-description {
+    min-width: 100px;
+    font-size: var(--font-size-sm);
+  }
+}

@@ -314,6 +314,15 @@
   border-top: 1px solid var(--border-light);
 }
 
+/* ============================================
+   REPORT BUTTON
+   ============================================ */
+
+.btn-primary.btn-lg {
+  width: 100%;
+  justify-content: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .detail-header {
@@ -356,6 +365,10 @@
   }
 
   .action-buttons button {
+    width: 100%;
+  }
+
+  .btn-primary.btn-lg {
     width: 100%;
   }
 }
