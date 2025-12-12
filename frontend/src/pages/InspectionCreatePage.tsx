@@ -188,7 +188,7 @@ export default function InspectionCreatePage() {
             disabled={isSubmitting || !formData.title || !formData.checklistId}
             className="btn-primary btn-lg"
           >
-            {isSubmitting ? "Wird erstellt..." : "Inspection erstellen"}
+            {isSubmitting ? "Wird erstellt..." : "Inspektion erstellen"}
           </button>
           <button
             type="button"

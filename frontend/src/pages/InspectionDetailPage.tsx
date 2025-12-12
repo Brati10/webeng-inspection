@@ -78,6 +78,45 @@ export default function InspectionDetailPage() {
     fetchData();
   }, [inspectionId]);
 
+  const getStatusLabel = () => {
+    switch (inspection?.status) {
+      case "PLANNED":
+        return "Geplant";
+      case "IN_PROGRESS":
+        return "In Bearbeitung";
+      case "COMPLETED":
+        return "Abgeschlossen";
+      default:
+        return inspection?.status;
+    }
+  };
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "PASSED":
+        return "badge-passed";
+      case "FAILED":
+        return "badge-failed";
+      case "NOT_APPLICABLE":
+        return "badge-na";
+      default:
+        return "";
+    }
+  };
+
+  const getStepStatusLabel = (status: string) => {
+    switch (status) {
+      case "PASSED":
+        return "Erfüllt";
+      case "FAILED":
+        return "Nicht erfüllt";
+      case "NOT_APPLICABLE":
+        return "N.A.";
+      default:
+        return status;
+    }
+  };
+
   const getStatusActions = () => {
     switch (inspection?.status) {
       case "PLANNED":
@@ -99,18 +138,7 @@ export default function InspectionDetailPage() {
     }
   };
 
-  const getStatusLabel = () => {
-    switch (inspection?.status) {
-      case "PLANNED":
-        return "Geplant";
-      case "IN_PROGRESS":
-        return "In Bearbeitung";
-      case "COMPLETED":
-        return "Abgeschlossen";
-      default:
-        return "";
-    }
-  };
+  const isInProgress = inspection?.status === "IN_PROGRESS";
 
   const updateStepStatus = async (stepId: number, newStatus: string) => {
     setIsUpdating(true);
@@ -120,6 +148,7 @@ export default function InspectionDetailPage() {
           "Content-Type": "text/plain",
         },
       });
+
       setSteps(
         steps.map((s) =>
           s.id === stepId ? { ...s, status: newStatus as any } : s
@@ -130,7 +159,7 @@ export default function InspectionDetailPage() {
         "Error updating step status:",
         err.response?.data || err.message
       );
-      alert("Fehler beim Aktualisieren des Steps");
+      alert("Fehler beim Aktualisieren des Status");
     } finally {
       setIsUpdating(false);
     }
@@ -139,15 +168,17 @@ export default function InspectionDetailPage() {
   const updateStepComment = async (stepId: number) => {
     setSavingCommentStepId(stepId);
     try {
-      const newComment = editingComments.get(stepId) || "";
-      await api.patch(`/inspection-steps/${stepId}/comment`, newComment, {
+      const comment = editingComments.get(stepId) || "";
+      await api.patch(`/inspection-steps/${stepId}/comment`, comment, {
         headers: {
           "Content-Type": "text/plain",
         },
       });
+
       setSteps(
-        steps.map((s) => (s.id === stepId ? { ...s, comment: newComment } : s))
+        steps.map((s) => (s.id === stepId ? { ...s, comment: comment } : s))
       );
+      alert("Kommentar erfolgreich gespeichert!");
     } catch (err: any) {
       console.error(
         "Error updating step comment:",
@@ -276,70 +307,105 @@ export default function InspectionDetailPage() {
                 <div key={step.id} className="step-detail-card">
                   <div className="step-header">
                     <h3>{step.checklistStep?.description}</h3>
-                    <select
-                      value={step.status}
-                      onChange={(e) =>
-                        updateStepStatus(step.id, e.target.value)
-                      }
-                      disabled={isUpdating}
-                      className={`status-badge status-${step.status.toLowerCase()}`}
-                    >
-                      <option value="PASSED">Erfüllt</option>
-                      <option value="FAILED">Nicht erfüllt</option>
-                      <option value="NOT_APPLICABLE">N.A.</option>
-                    </select>
+
+                    {/* Status Badge/Dropdown basierend auf Inspection Status */}
+                    {isInProgress ? (
+                      <select
+                        value={step.status}
+                        onChange={(e) =>
+                          updateStepStatus(step.id, e.target.value)
+                        }
+                        disabled={isUpdating}
+                        className={`status-dropdown status-${step.status.toLowerCase()}`}
+                      >
+                        <option value="PASSED">Erfüllt</option>
+                        <option value="FAILED">Nicht erfüllt</option>
+                        <option value="NOT_APPLICABLE">N.A.</option>
+                      </select>
+                    ) : (
+                      <span
+                        className={`status-badge ${getStatusBadgeClass(
+                          step.status
+                        )}`}
+                      >
+                        {getStepStatusLabel(step.status)}
+                      </span>
+                    )}
                   </div>
 
                   <div className="step-content">
+                    {/* Kommentar Sektion */}
                     <div className="comment-section">
                       <label htmlFor={`comment-${step.id}`}>Kommentar:</label>
-                      <textarea
-                        id={`comment-${step.id}`}
-                        value={editingComments.get(step.id) || ""}
-                        onChange={(e) => {
-                          setEditingComments(
-                            new Map(editingComments).set(
-                              step.id,
-                              e.target.value
-                            )
-                          );
-                        }}
-                        className="comment-textarea"
-                        placeholder="Notizen zu diesem Schritt..."
-                      />
-                      <button
-                        onClick={() => updateStepComment(step.id)}
-                        disabled={savingCommentStepId === step.id}
-                        className="btn-primary btn-sm"
-                      >
-                        {savingCommentStepId === step.id
-                          ? "Speichert..."
-                          : "Kommentar speichern"}
-                      </button>
+
+                      {isInProgress ? (
+                        <>
+                          <textarea
+                            id={`comment-${step.id}`}
+                            value={editingComments.get(step.id) || ""}
+                            onChange={(e) => {
+                              setEditingComments(
+                                new Map(editingComments).set(
+                                  step.id,
+                                  e.target.value
+                                )
+                              );
+                            }}
+                            className="comment-textarea"
+                            placeholder="Notizen zu diesem Schritt..."
+                          />
+                          <button
+                            onClick={() => updateStepComment(step.id)}
+                            disabled={savingCommentStepId === step.id}
+                            className="btn-primary btn-sm"
+                          >
+                            {savingCommentStepId === step.id
+                              ? "Speichert..."
+                              : "Kommentar speichern"}
+                          </button>
+                        </>
+                      ) : (
+                        <div className="comment-readonly">
+                          {step.comment ? (
+                            <p>{step.comment}</p>
+                          ) : (
+                            <p className="text-muted">
+                              Kein Kommentar vorhanden
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
 
+                    {/* Foto Sektion */}
                     <div className="photo-section">
-                      <label htmlFor={`photo-${step.id}`}>
-                        Foto hochladen:
-                      </label>
-                      <div className="photo-upload">
-                        <input
-                          id={`photo-${step.id}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              uploadPhoto(step.id, file);
-                            }
-                          }}
-                          disabled={uploadingPhotoStepId === step.id}
-                        />
-                        {uploadingPhotoStepId === step.id && (
-                          <p className="uploading">Foto wird hochgeladen...</p>
-                        )}
-                      </div>
+                      <label>Foto:</label>
 
+                      {/* Foto Upload nur in In Bearbeitung */}
+                      {isInProgress && (
+                        <div className="photo-upload">
+                          <label>Foto hochladen:</label>
+                          <input
+                            id={`photo-${step.id}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                uploadPhoto(step.id, file);
+                              }
+                            }}
+                            disabled={uploadingPhotoStepId === step.id}
+                          />
+                          {uploadingPhotoStepId === step.id && (
+                            <p className="uploading">
+                              Foto wird hochgeladen...
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Foto Anzeige - immer sichtbar wenn vorhanden */}
                       {step.photoPath && (
                         <div className="photo-display">
                           <img
@@ -347,6 +413,10 @@ export default function InspectionDetailPage() {
                             alt="Step photo"
                           />
                         </div>
+                      )}
+
+                      {!step.photoPath && !isInProgress && (
+                        <p className="text-muted">Kein Foto vorhanden</p>
                       )}
                     </div>
                   </div>
