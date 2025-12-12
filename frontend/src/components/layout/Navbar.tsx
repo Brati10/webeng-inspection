@@ -18,9 +18,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <h2 style={{ margin: 0, color: "var(--primary-darker)" }}>
-          Inspektionsverwaltung
-        </h2>
+        <h2>Inspektionsverwaltung</h2>
       </div>
 
       <div className="navbar-links">

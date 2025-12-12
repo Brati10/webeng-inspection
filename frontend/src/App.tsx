@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
@@ -98,6 +99,7 @@ function App() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

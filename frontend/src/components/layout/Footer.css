@@ -1,0 +1,19 @@
+/* ============================================
+   FOOTER COMPONENT STYLES
+   ============================================ */
+
+.footer {
+  background-color: var(--secondary);
+  border-top: 2px solid var(--secondary-dark);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.footer p {
+  margin: 0;
+  color: var(--text-inverse);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+}
